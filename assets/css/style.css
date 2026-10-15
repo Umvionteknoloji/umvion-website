@@ -369,3 +369,17 @@ p { margin: 0; }
   .numbers .wrap { grid-template-columns: 1fr 1fr; }
   .numbers b { font-size: 30px; overflow-wrap: anywhere; }
 }
+
+/* İletişim formu durumları */
+[hidden] { display: none !important; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.form-msg { display: none; font-size: 15px; padding: 12px 14px; border-radius: 10px; }
+.form-msg.is-visible { display: block; }
+.form-msg--error { color: #9b2c22; background: #fdecea; }
+.field.is-invalid input, .field.is-invalid textarea { border-color: #c0352b; }
+.btn[disabled] { opacity: .65; cursor: progress; }
+.form-success { justify-items: start; }
+.form-success h2 { font-size: 26px; }
+.form-success p { color: var(--ink-soft); }
+.success-mark { width: 48px; height: 48px; border-radius: 50%; background: #e5f6ef; position: relative; }
+.success-mark::after { content: ""; position: absolute; left: 16px; top: 15px; width: 16px; height: 9px; border-left: 3px solid var(--green); border-bottom: 3px solid var(--green); transform: rotate(-45deg); }

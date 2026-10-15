@@ -38,14 +38,15 @@
     <section class="page-hero">
       <div class="wrap">
         <h1>Projenizi veya destek ihtiyacınızı anlatın</h1>
-        <p class="lead">Formu doldurun ya da doğrudan e-posta gönderin; ihtiyacınızı dinleyip size uygun destek modelini önerelim.</p>
+        <p class="lead">Formu doldurun ya da info@umvion.com adresine yazın; ihtiyacınızı dinleyip size uygun destek modelini önerelim.</p>
       </div>
     </section>
 
     <section class="section">
       <div class="wrap contact">
-        <!-- Form, ziyaretçinin e-posta programında info@umvion.com'a hazır bir mesaj açar -->
-        <form class="form" id="contact-form" novalidate>
+        <!-- Form, Cloudflare Worker üzerinden Resend ile info@umvion.com'a gönderilir (kod: form-worker/worker.js) -->
+        <form class="form" id="contact-form" action="https://umvion-form.serdox.workers.dev" method="POST" novalidate>
+          <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-row">
             <div class="field"><label for="f-name">Adınız soyadınız *</label><input id="f-name" name="name" autocomplete="name" required></div>
             <div class="field"><label for="f-company">Şirket</label><input id="f-company" name="company" autocomplete="organization"></div>
@@ -67,12 +68,18 @@
             </select>
           </div>
           <div class="field"><label for="f-message">Mesajınız *</label><textarea id="f-message" name="message" required></textarea></div>
-          <p class="form-error" id="form-error" role="alert">Lütfen ad, e-posta ve mesaj alanlarını doldurun.</p>
+          <p class="form-msg form-msg--error" id="form-error" role="alert"></p>
           <div>
-            <button class="btn btn--primary" type="submit">Mesajı e-postayla gönder</button>
-            <p class="form-hint" style="margin-top:12px">Gönder'e bastığınızda e-posta programınız hazır bir mesajla açılır.</p>
+            <button class="btn btn--primary" type="submit" id="form-submit">Mesajı gönder</button>
+            <p class="form-hint" style="margin-top:12px">Mesajınız doğrudan ekibimize iletilir; en kısa sürede size dönüş yaparız.</p>
           </div>
         </form>
+        <div class="form form-success" id="form-success" hidden tabindex="-1">
+          <span class="success-mark" aria-hidden="true"></span>
+          <h2>Mesajınız bize ulaştı</h2>
+          <p>Teşekkürler. Ekibimiz talebinizi inceleyip verdiğiniz e-posta adresinden size dönüş yapacak.</p>
+          <button class="btn btn--ghost" type="button" id="form-again">Yeni mesaj yazın</button>
+        </div>
 
         <div class="contact-info">
           <div><h3>E-posta</h3><p><a href="mailto:info@umvion.com">info@umvion.com</a></p></div>

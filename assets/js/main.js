@@ -27,19 +27,47 @@
     Object.keys(map).forEach(function (id) { var s = document.getElementById(id); if (s) io.observe(s); });
   }
 
-  // İletişim formu: e-posta programında hazır mesaj açar
+  // İletişim formu: Cloudflare Worker + Resend ile doğrudan info@umvion.com'a gönderir
   var form = document.getElementById('contact-form');
   if (form) {
+    var msg = document.getElementById('form-error');
+    var btn2 = document.getElementById('form-submit');
+    var done = document.getElementById('form-success');
+    var showError = function (text) { msg.textContent = text; msg.classList.add('is-visible'); };
+
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
-      var v = function (n) { return (form.elements[n].value || '').trim(); };
-      var err = document.getElementById('form-error');
-      if (!v('name') || !v('email') || !v('message')) { err.classList.add('is-visible'); return; }
-      err.classList.remove('is-visible');
-      var body = 'Ad Soyad: ' + v('name') + '\nŞirket: ' + v('company') + '\nE-posta: ' + v('email') +
-                 '\nTelefon: ' + v('phone') + '\nHizmet: ' + v('service') + '\n\n' + v('message');
-      window.location.href = 'mailto:info@umvion.com?subject=' +
-        encodeURIComponent('Web sitesi talebi - ' + v('service')) + '&body=' + encodeURIComponent(body);
+      msg.classList.remove('is-visible');
+      var missing = [];
+      ['name', 'email', 'message'].forEach(function (n) {
+        var el = form.elements[n], field = el.closest('.field');
+        var bad = !el.value.trim() || (n === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim()));
+        field.classList.toggle('is-invalid', bad);
+        if (bad) missing.push(el);
+      });
+      if (missing.length) {
+        showError('Lütfen ad soyad, geçerli bir e-posta ve mesaj alanlarını doldurun.');
+        missing[0].focus();
+        return;
+      }
+
+      var data = new FormData(form);
+      btn2.disabled = true; btn2.textContent = 'Gönderiliyor...';
+
+      fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok && j.success !== false }; }); })
+        .then(function (res) {
+          if (!res.ok) throw new Error();
+          form.reset(); form.hidden = true; done.hidden = false; done.focus();
+        })
+        .catch(function () {
+          showError('Mesaj gönderilemedi. Lütfen tekrar deneyin veya doğrudan info@umvion.com adresine yazın.');
+        })
+        .then(function () { btn2.disabled = false; btn2.textContent = 'Mesajı gönder'; });
+    });
+
+    document.getElementById('form-again').addEventListener('click', function () {
+      done.hidden = true; form.hidden = false; form.elements.name.focus();
     });
   }
 })();
