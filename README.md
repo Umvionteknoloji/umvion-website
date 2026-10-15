@@ -1,18 +1,16 @@
 # Umvion Teknoloji – Kurumsal Web Sitesi
 
-www.umvion.com'un statik HTML sürümü. Hostinger Web Hosting'e GitHub üzerinden otomatik yayınlanır.
+www.umvion.com'un statik HTML sürümü. GitHub Pages üzerinden yayınlanır; `main` dalına her push siteyi günceller.
 
 ## Yapı
 ```
-index.html            Ana Sayfa            → https://www.umvion.com/
-hizmetler.html        Hizmetlerimiz        → /hizmetler
-referanslar.html      Referanslar          → /referanslar
-iletisim.html         İletişim             → /iletisim
-assets/css/           site.css (ortak stil), fonts.css, cookieconsent.css
-assets/js/site.js     Animasyonlar, mobil menü, iletişim formu
-assets/img/           Görseller (*-mobil.png = mobil görünüm kırpımı)
-.htaccess             HTTPS/www yönlendirmesi, uzantısız adresler, önbellek
-robots.txt, sitemap.xml
+index.html            Ana Sayfa      → https://www.umvion.com/
+hizmetler.html        Hizmetlerimiz  → /hizmetler  (#teknik-destek #donanim #rpa #web #sellina #projeler)
+referanslar.html      Referanslar    → /referanslar
+iletisim.html         İletişim       → /iletisim
+assets/css/style.css  Tüm stiller; renkler en üstteki :root bölümünde
+assets/js/main.js     Mobil menü, hizmetler alt menüsü, iletişim formu
+assets/img/           Görseller
 ```
 
 ## Yerelde önizleme
@@ -21,9 +19,8 @@ robots.txt, sitemap.xml
 ## Güncelleme akışı
 1. Dosyayı düzenleyin (ör. `index.html` içindeki metni değiştirin).
 2. Değişikliği GitHub'a gönderin (commit + push).
-3. Hostinger'da otomatik dağıtım açıksa site kendiliğinden güncellenir; değilse hPanel → Git → **Deploy**.
+3. GitHub Pages birkaç dakika içinde siteyi günceller.
 
 ## Notlar
-- Sayfalar Hostinger AI Builder çıktısından türetildi; sınıf adları (`block-header`, `layout-element` vb.) `site.css` ile eşleşir, silinmemeli.
 - İletişim formu ziyaretçinin e-posta programını açarak info@umvion.com'a mesaj hazırlar. Sunucu tarafı gönderim sonra eklenebilir.
-- Fontlar `cdn.zyrosite.com` üzerinden yüklenir.
+- Yazı tipi: Onest (Google Fonts).
