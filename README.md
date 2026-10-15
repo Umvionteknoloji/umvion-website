@@ -7,7 +7,7 @@ www.umvion.com'un statik HTML sürümü. GitHub Pages üzerinden yayınlanır; `
 index.html            Ana Sayfa      → https://www.umvion.com/
 hizmetler.html        Hizmetlerimiz  → /hizmetler  (#teknik-destek #donanim #rpa #web #sellina #projeler)
 uygulamalar.html      Bulut uygulamaları → /uygulamalar
-tima.html, servis-formu.html, teklif-sistemi.html, masraf-sistemi.html  Uygulama tanıtım sayfaları
+tima.html, visita.html, offerta.html, spesa.html  Uygulama tanıtım sayfaları
 referanslar.html      Referanslar    → /referanslar
 iletisim.html         İletişim       → /iletisim
 assets/css/style.css  Tüm stiller; renkler en üstteki :root bölümünde
