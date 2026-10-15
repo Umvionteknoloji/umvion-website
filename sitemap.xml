@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.umvion.com/</loc><priority>1.0</priority></url>
-  <url><loc>https://www.umvion.com/hizmetler</loc><priority>0.8</priority></url>
-  <url><loc>https://www.umvion.com/referanslar</loc><priority>0.8</priority></url>
-  <url><loc>https://www.umvion.com/iletisim</loc><priority>0.7</priority></url>
+  <url><loc>https://www.umvion.com/</loc></url>
+  <url><loc>https://www.umvion.com/hizmetler</loc></url>
+  <url><loc>https://www.umvion.com/uygulamalar</loc></url>
+  <url><loc>https://www.umvion.com/tima</loc></url>
+  <url><loc>https://www.umvion.com/servis-formu</loc></url>
+  <url><loc>https://www.umvion.com/teklif-sistemi</loc></url>
+  <url><loc>https://www.umvion.com/masraf-sistemi</loc></url>
+  <url><loc>https://www.umvion.com/referanslar</loc></url>
+  <url><loc>https://www.umvion.com/iletisim</loc></url>
 </urlset>

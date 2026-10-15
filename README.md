@@ -6,11 +6,13 @@ www.umvion.com'un statik HTML sürümü. GitHub Pages üzerinden yayınlanır; `
 ```
 index.html            Ana Sayfa      → https://www.umvion.com/
 hizmetler.html        Hizmetlerimiz  → /hizmetler  (#teknik-destek #donanim #rpa #web #sellina #projeler)
+uygulamalar.html      Bulut uygulamaları → /uygulamalar
+tima.html, servis-formu.html, teklif-sistemi.html, masraf-sistemi.html  Uygulama tanıtım sayfaları
 referanslar.html      Referanslar    → /referanslar
 iletisim.html         İletişim       → /iletisim
 assets/css/style.css  Tüm stiller; renkler en üstteki :root bölümünde
 assets/js/main.js     Mobil menü, hizmetler alt menüsü, iletişim formu
-assets/img/           Görseller
+assets/img/           Görseller (apps/ = isimleri değiştirilmiş uygulama ekran görüntüleri)
 ```
 
 ## Yerelde önizleme
@@ -24,3 +26,6 @@ assets/img/           Görseller
 ## Notlar
 - İletişim formu ziyaretçinin e-posta programını açarak info@umvion.com'a mesaj hazırlar. Sunucu tarafı gönderim sonra eklenebilir.
 - Yazı tipi: Onest (Google Fonts).
+
+## Uygulama ekran görüntüleri
+`assets/img/apps/` içindeki görsellerde kişi, firma, fiyat ve iletişim bilgileri sahte verilerle değiştirilmiştir. Orijinal ekran görüntülerini bu depoya **eklemeyin**; depo herkese açıktır.

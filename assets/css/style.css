@@ -383,3 +383,97 @@ p { margin: 0; }
 .form-success p { color: var(--ink-soft); }
 .success-mark { width: 48px; height: 48px; border-radius: 50%; background: #e5f6ef; position: relative; }
 .success-mark::after { content: ""; position: absolute; left: 16px; top: 15px; width: 16px; height: 9px; border-left: 3px solid var(--green); border-bottom: 3px solid var(--green); transform: rotate(-45deg); }
+
+/* =========================================================
+   v3 – bulut uygulamaları
+   ========================================================= */
+.section-head--row { max-width: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.section-head--row > div { max-width: 640px; }
+
+/* Uygulama kartları */
+.app-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.app-card { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--white); color: var(--ink); text-decoration: none; transition: border-color .2s; }
+.app-card:hover { border-color: var(--blue); }
+.app-card-img { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--mist); border-bottom: 1px solid var(--line); }
+.app-card-img img { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.app-card-body { display: block; padding: 24px 28px 28px; }
+.app-card h2, .app-card h3 { font-size: 22px; }
+.app-card-tag { display: block; margin-top: 6px; color: var(--ink-soft); }
+.app-card .more { display: inline-block; margin-top: 14px; font-weight: 600; color: var(--blue); font-size: 15px; }
+
+/* Uygulama sayfası girişi */
+.app-hero { padding: 56px 0 72px; background: linear-gradient(var(--mist), var(--white) 70%); border-bottom: 1px solid var(--line); }
+.crumb { display: inline-block; font-size: 15px; color: var(--ink-soft); text-decoration: none; margin-bottom: 24px; }
+.crumb::before { content: "‹ "; }
+.crumb:hover { color: var(--blue); }
+.app-hero-head { display: flex; align-items: center; gap: 18px; }
+.app-badge { width: 64px; height: 64px; border-radius: 16px; background: var(--blue); color: var(--white); display: grid; place-items: center; flex: none; }
+.app-badge svg { width: 32px; height: 32px; }
+.app-hero h1 { font-size: clamp(36px, 5vw, 56px); }
+.app-tagline { margin-top: 4px; font-size: 19px; color: var(--ink-soft); }
+.app-hero .lead { margin-top: 24px; }
+.app-cover { margin-top: 48px; }
+.highlights { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.highlights li { padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); color: var(--ink-soft); font-size: 15px; }
+.highlights b { display: block; color: var(--ink); font-size: 18px; margin-bottom: 2px; }
+
+/* Ekran görüntüsü çerçevesi (tıklayınca büyür) */
+.shot { display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--white); cursor: zoom-in;
+  box-shadow: 0 24px 48px -28px rgba(14,26,58,.35); }
+.shot img { width: 100%; height: auto; }
+.shot:hover { border-color: #b9c6e4; }
+
+/* Özellik satırları */
+.feature-row { padding: 80px 0; border-bottom: 1px solid var(--line); }
+.feature-row .wrap { display: grid; grid-template-columns: 5fr 7fr; gap: 56px; align-items: center; }
+.feature-row--flip .wrap { grid-template-columns: 7fr 5fr; }
+.feature-row--flip .feature-text { order: 2; }
+.feature-text h2 { font-size: clamp(26px, 3vw, 34px); }
+.feature-text > p { margin-top: 14px; color: var(--ink-soft); font-size: 18px; }
+
+.who { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.who h2 { font-size: clamp(26px, 3vw, 34px); }
+.who-note { padding: 32px; border-radius: 20px; background: var(--white); border: 1px solid var(--line); }
+.who-note h3 { font-size: 20px; }
+.who-note p { margin-top: 10px; color: var(--ink-soft); }
+
+.app-minis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.app-mini { display: flex; gap: 16px; align-items: center; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); color: var(--ink-soft); text-decoration: none; font-size: 15px; }
+.app-mini b { color: var(--ink); font-size: 17px; }
+.app-mini:hover { border-color: var(--blue); }
+
+/* Kaydırınca beliren demo butonu */
+.float-cta { position: fixed; z-index: 60; right: 24px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 14px;
+  padding: 10px 10px 10px 22px; border-radius: 999px; background: var(--ink); color: var(--white); font-weight: 500; font-size: 15px;
+  box-shadow: 0 18px 40px -12px rgba(14,26,58,.5); transform: translateY(0); transition: transform .3s ease, opacity .3s ease; }
+.float-cta.is-hidden { transform: translateY(140%); opacity: 0; pointer-events: none; }
+.float-cta .btn { padding: 10px 18px; font-size: 15px; }
+.float-close { background: none; border: 0; color: #b8c2d9; font-size: 22px; line-height: 1; cursor: pointer; padding: 4px 8px; }
+.float-close:hover { color: var(--white); }
+
+/* Açılır pencereler */
+.modal, .lightbox { border: 0; padding: 0; border-radius: 20px; max-width: min(640px, calc(100vw - 32px)); width: 100%; color: var(--ink); }
+.modal::backdrop, .lightbox::backdrop { background: rgba(14,26,58,.55); backdrop-filter: blur(2px); }
+.modal .form, .modal .form-success { border: 0; padding: 36px; }
+.modal h2 { font-size: 24px; }
+.modal-close { position: absolute; top: 12px; right: 12px; z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--white); font-size: 20px; cursor: pointer; color: var(--ink); }
+.lightbox { max-width: min(1400px, calc(100vw - 32px)); background: var(--white); }
+.lightbox img { width: 100%; height: auto; max-height: calc(100vh - 64px); object-fit: contain; }
+
+@media (max-width: 960px) {
+  .app-grid, .feature-row .wrap, .feature-row--flip .wrap, .who { grid-template-columns: 1fr; }
+  .feature-row--flip .feature-text { order: 0; }
+  .highlights { grid-template-columns: 1fr 1fr; }
+  .app-minis { grid-template-columns: 1fr; }
+  .section-head--row { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 560px) {
+  .feature-row { padding: 56px 0; }
+  .float-cta { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); justify-content: space-between; padding-left: 18px; }
+  .float-cta span { font-size: 14px; }
+  .modal .form, .modal .form-success { padding: 28px 20px; }
+  .highlights { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .float-cta { transition: none; } }
+.float-cta .btn { white-space: nowrap; }
+@media (max-width: 560px) { .float-cta { gap: 8px; } .float-cta .btn { padding: 9px 14px; font-size: 14px; } }
