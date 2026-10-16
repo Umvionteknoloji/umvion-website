@@ -37,15 +37,18 @@
   </header>
 
   <main>
-    <section class="page-hero">
-      <div class="wrap">
-        <h1>Projenizi veya destek ihtiyacınızı anlatın</h1>
-        <p class="lead">Formu doldurun ya da info@umvion.com adresine yazın; ihtiyacınızı dinleyip size uygun destek modelini önerelim.</p>
-      </div>
-    </section>
-
-    <section class="section">
+    <section class="contact-page">
       <div class="wrap contact">
+        <div class="contact-side">
+          <h1>Projenizi veya destek ihtiyacınızı anlatın</h1>
+          <p class="lead">Formu doldurun ya da info@umvion.com adresine yazın; ihtiyacınızı dinleyip size uygun destek modelini önerelim.</p>
+          <div class="contact-info">
+            <div><h3>E-posta</h3><p><a href="mailto:info@umvion.com">info@umvion.com</a></p></div>
+            <div><h3>Adres</h3><p>Üniversite Mah. Sarıgül Sok. İstanbul Teknokent No:37/1 İç Kapı No:46, 34320 Avcılar / İstanbul</p></div>
+            <div><h3>Destek modelleri</h3><p>Full-cycle sürekli hizmet veya ihtiyaç anında per-call saha paketleri. <a href="hakkimizda.html">Detaylar</a></p></div>
+          </div>
+        </div>
+        <div class="contact-main">
         <!-- Form, Cloudflare Worker üzerinden Resend ile info@umvion.com'a gönderilir (kod: form-worker/worker.js) -->
         <form class="form js-form" id="contact-form" action="https://umvion-form.serdox.workers.dev" method="POST" novalidate>
           <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -75,9 +78,9 @@
           </div>
           <div class="field"><label for="f-message">Mesajınız *</label><textarea id="f-message" name="message" required></textarea></div>
           <p class="form-msg form-msg--error" role="alert"></p>
-          <div>
+          <div class="form-actions">
             <button class="btn btn--primary" type="submit">Mesajı gönder</button>
-            <p class="form-hint" style="margin-top:12px">Mesajınız doğrudan ekibimize iletilir; en kısa sürede size dönüş yaparız.</p>
+            <p class="form-hint">Mesajınız doğrudan ekibimize iletilir; en kısa sürede dönüş yaparız.</p>
           </div>
         </form>
         <div class="form form-success" hidden tabindex="-1">
@@ -87,10 +90,6 @@
           <button class="btn btn--ghost" type="button" data-again>Yeni mesaj yazın</button>
         </div>
 
-        <div class="contact-info">
-          <div><h3>E-posta</h3><p><a href="mailto:info@umvion.com">info@umvion.com</a></p></div>
-          <div><h3>Adres</h3><p>Üniversite Mah. Sarıgül Sok. İstanbul Teknokent No:37/1 İç Kapı No:46, 34320 Avcılar / İstanbul</p></div>
-          <div><h3>Destek modelleri</h3><p>Full-cycle sürekli hizmet veya ihtiyaç anında per-call saha paketleri. Detaylar için <a href="index.html">ana sayfaya</a> bakın.</p></div>
         </div>
       </div>
     </section>

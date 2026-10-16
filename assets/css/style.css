@@ -617,3 +617,28 @@ p { margin: 0; }
 .brand-group li { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--mist); font-size: 14px; font-weight: 500; color: var(--ink); }
 @media (max-width: 960px) { .brands-head { flex-direction: column; align-items: flex-start; } .brand-groups { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .brands { padding: 22px 18px; } .brand-group li { font-size: 13px; padding: 5px 10px; } }
+
+/* v7 – tek ekranlık ana sayfa */
+.hero--full { min-height: calc(100vh - 77px); min-height: calc(100svh - 77px); display: flex; align-items: center; padding: 40px 0; }
+.hero--full .wrap { width: 100%; }
+.site-footer--slim { margin-top: 0; padding: 18px 0; }
+.site-footer--slim .footer-bottom { margin-top: 0; padding-top: 0; border-top: 0; align-items: center; }
+.site-footer--slim a { color: var(--ink-soft); text-decoration: none; }
+@media (max-height: 760px) and (min-width: 961px) { .hero--full .hub { max-width: 470px; } .hero h1 { font-size: clamp(34px, 4vw, 50px); } }
+
+/* v7 – tek ekrana sığan iletişim sayfası */
+.contact-page { position: relative; overflow: hidden; isolation: isolate; padding: 48px 0 56px; }
+.contact-page::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(rgba(31,90,224,.14) 1px, transparent 1.2px); background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 45% 80% at 15% 40%, #000 10%, transparent 75%); mask-image: radial-gradient(ellipse 45% 80% at 15% 40%, #000 10%, transparent 75%); }
+.contact-page .contact { grid-template-columns: 1fr 1.25fr; gap: 56px; align-items: center; }
+.contact-side h1 { font-size: clamp(30px, 3.4vw, 42px); }
+.contact-side .lead { margin-top: 14px; font-size: 17px; }
+.contact-side .contact-info { margin-top: 28px; gap: 18px; }
+.contact-page .form { gap: 14px; padding: 28px; }
+.contact-page .form-row { gap: 14px; }
+.contact-page .field input, .contact-page .field select, .contact-page .field textarea { padding: 10px 12px; }
+.contact-page .field textarea { min-height: 96px; }
+.form-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.form-actions .form-hint { flex: 1; min-width: 200px; }
+@media (max-width: 960px) { .contact-page .contact { grid-template-columns: 1fr; gap: 32px; } .contact-side .contact-info { display: none; } }
