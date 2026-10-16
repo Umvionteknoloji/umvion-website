@@ -49,56 +49,26 @@
           <p class="hero-note"><strong>26 yıllık</strong> mühendislik ve yazılım tecrübesiyle, Türkiye'nin önde gelen perakende markalarının yüzlerce mağazasında aktif olarak çalışıyoruz.</p>
         </div>
 
-        <!-- Hizmet panosu: her satır Hizmetlerimiz sayfasındaki kendi bölümüne gider -->
-        <div class="board" aria-label="Hizmet alanlarımız">
-          <div class="board-head">
-            <span class="board-title">Hizmet alanlarımız</span>
-            <span class="board-status"><span class="dot dot--pulse"></span>Always on</span>
+        <!-- Hizmet ağı: merkezde Umvion, çevrede hizmetler; her düğüm Hizmetlerimiz sayfasındaki bölümüne gider -->
+        <div class="hub" aria-label="Hizmet alanlarımız">
+          <svg class="hub-lines" viewBox="0 0 100 100" aria-hidden="true">
+            <defs><radialGradient id="hubglow"><stop offset="0" stop-color="#1f5ae0" stop-opacity=".18"/><stop offset="1" stop-color="#1f5ae0" stop-opacity="0"/></radialGradient></defs>
+            <circle cx="50" cy="50" r="34" fill="url(#hubglow)"/>
+            <circle class="hub-orbit" cx="50" cy="50" r="26"/>
+            <circle class="hub-orbit hub-orbit--2" cx="50" cy="50" r="39"/>
+            <g class="hub-paths"><path id="hp0" d="M50 50 L50 11"/><path id="hp1" d="M50 50 L86 31"/><path id="hp2" d="M50 50 L86 69"/><path id="hp3" d="M50 50 L50 89"/><path id="hp4" d="M50 50 L14 69"/><path id="hp5" d="M50 50 L14 31"/></g>
+            <g class="hub-pulses"><circle r="0.9"><animateMotion dur="3.2s" begin="-0.10s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#hp0"/></animateMotion></circle><circle r="0.9"><animateMotion dur="3.2s" begin="-0.65s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#hp1"/></animateMotion></circle><circle r="0.9"><animateMotion dur="3.2s" begin="-1.20s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#hp2"/></animateMotion></circle><circle r="0.9"><animateMotion dur="3.2s" begin="-1.75s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#hp3"/></animateMotion></circle><circle r="0.9"><animateMotion dur="3.2s" begin="-2.30s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#hp4"/></animateMotion></circle><circle r="0.9"><animateMotion dur="3.2s" begin="-2.85s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#hp5"/></animateMotion></circle></g>
+          </svg>
+          <div class="hub-core">
+            <img src="assets/img/umvion-logo.png" alt="Umvion Teknoloji" width="253" height="154">
           </div>
-          <ul class="board-list">
-          <li>
-            <a class="board-row" href="hizmetler.html#teknik-destek">
-              <span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/><path d="M19 20a3 3 0 0 1-3 2h-2"/></svg></span>
-              <span><span class="board-name">Teknik destek ve helpdesk</span><br><span class="board-desc">Merkez ofis, mağaza ve fabrikada</span></span>
-              <span class="board-state"><span class="dot"></span>Aktif</span>
-            </a>
-          </li>
-          <li>
-            <a class="board-row" href="hizmetler.html#donanim">
-              <span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3.5" width="16" height="7" rx="2"/><rect x="4" y="13.5" width="16" height="7" rx="2"/><path d="M8 7h.01M8 17h.01M12 7h4M12 17h4"/></svg></span>
-              <span><span class="board-name">Donanım ve network</span><br><span class="board-desc">Sunucu, ağ, el terminali, yazıcı</span></span>
-              <span class="board-state"><span class="dot"></span>Aktif</span>
-            </a>
-          </li>
-          <li>
-            <a class="board-row" href="hizmetler.html#rpa">
-              <span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9.5 13h.01M14.5 13h.01M9.5 16h5M2.5 13v2M21.5 13v2"/><circle cx="12" cy="3.5" r="1"/></svg></span>
-              <span><span class="board-name">RPA ve yapay zekâ</span><br><span class="board-desc">Süreç otomasyonu ve AI</span></span>
-              <span class="board-state"><span class="dot"></span>Aktif</span>
-            </a>
-          </li>
-          <li>
-            <a class="board-row" href="hizmetler.html#web">
-              <span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg></span>
-              <span><span class="board-name">Web ve e-ticaret</span><br><span class="board-desc">Kurumsal site ve satış platformları</span></span>
-              <span class="board-state"><span class="dot"></span>Aktif</span>
-            </a>
-          </li>
-          <li>
-            <a class="board-row" href="hizmetler.html#sellina">
-              <span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="13" rx="2"/><path d="M8 20h8M12 16v4M8 7h8M8 10.5h5"/></svg></span>
-              <span><span class="board-name">Sellina mobil kasa</span><br><span class="board-desc">Self checkout ve reyonda satış</span></span>
-              <span class="board-state"><span class="dot"></span>Aktif</span>
-            </a>
-          </li>
-          <li>
-            <a class="board-row" href="hizmetler.html#projeler">
-              <span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16l1.5 5H2.5z"/><path d="M2.5 9a3.2 3.2 0 0 0 6.4 0 3.2 3.2 0 0 0 6.2 0 3.2 3.2 0 0 0 6.4 0"/><path d="M4.5 12v8h15v-8"/><path d="M10 20v-4h4v4"/></svg></span>
-              <span><span class="board-name">Mağaza projeleri</span><br><span class="board-desc">Açılış, renovasyon, kapanış</span></span>
-              <span class="board-state"><span class="dot"></span>Aktif</span>
-            </a>
-          </li>
-          </ul>
+          <span class="hub-status"><span class="dot dot--pulse"></span>Always on</span>
+          <a class="hub-node" style="left:50%;top:11%" href="hizmetler.html#teknik-destek"><span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/><path d="M19 20a3 3 0 0 1-3 2h-2"/></svg></span>Teknik destek</a>
+          <a class="hub-node" style="left:86%;top:31%" href="hizmetler.html#donanim"><span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3.5" width="16" height="7" rx="2"/><rect x="4" y="13.5" width="16" height="7" rx="2"/><path d="M8 7h.01M8 17h.01M12 7h4M12 17h4"/></svg></span>Donanım & network</a>
+          <a class="hub-node" style="left:86%;top:69%" href="hizmetler.html#rpa"><span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9.5 13h.01M14.5 13h.01M9.5 16h5M2.5 13v2M21.5 13v2"/><circle cx="12" cy="3.5" r="1"/></svg></span>RPA & yapay zekâ</a>
+          <a class="hub-node" style="left:50%;top:89%" href="hizmetler.html#web"><span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg></span>Web & e-ticaret</a>
+          <a class="hub-node" style="left:14%;top:69%" href="hizmetler.html#sellina"><span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="13" rx="2"/><path d="M8 20h8M12 16v4M8 7h8M8 10.5h5"/></svg></span>Sellina mobil kasa</a>
+          <a class="hub-node" style="left:14%;top:31%" href="hizmetler.html#projeler"><span class="board-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16l1.5 5H2.5z"/><path d="M2.5 9a3.2 3.2 0 0 0 6.4 0 3.2 3.2 0 0 0 6.2 0 3.2 3.2 0 0 0 6.4 0"/><path d="M4.5 12v8h15v-8"/><path d="M10 20v-4h4v4"/></svg></span>Mağaza projeleri</a>
         </div>
       </div>
     </section>

@@ -477,3 +477,53 @@ p { margin: 0; }
 @media (prefers-reduced-motion: reduce) { .float-cta { transition: none; } }
 .float-cta .btn { white-space: nowrap; }
 @media (max-width: 560px) { .float-cta { gap: 8px; } .float-cta .btn { padding: 9px 14px; font-size: 14px; } }
+
+/* =========================================================
+   v4 – giriş görseli: Umvion merkezli hizmet ağı
+   ========================================================= */
+.hero { position: relative; overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(rgba(31,90,224,.16) 1px, transparent 1.2px); background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 75% 45%, #000 20%, transparent 75%);
+          mask-image: radial-gradient(ellipse 60% 70% at 75% 45%, #000 20%, transparent 75%); }
+.hero::after { content: ""; position: absolute; z-index: -1; pointer-events: none; width: 620px; height: 620px; right: -140px; top: -120px;
+  background: radial-gradient(circle, rgba(25,184,230,.12), transparent 65%); }
+
+.hub { position: relative; width: 100%; max-width: 560px; aspect-ratio: 1 / 1; margin-left: auto; }
+.hub-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.hub-paths path { stroke: #b4c4e8; stroke-width: .4; fill: none; stroke-dasharray: 1 1.4; }
+.hub-pulses circle { fill: var(--cyan); filter: drop-shadow(0 0 .8px var(--cyan)); }
+.hub-orbit { fill: none; stroke: #d6e0f5; stroke-width: .3; stroke-dasharray: .6 1.6; transform-origin: 50px 50px; animation: spin 60s linear infinite; }
+.hub-orbit--2 { stroke: #e3e9f6; animation-duration: 90s; animation-direction: reverse; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hub-core { position: absolute; left: 50%; top: 50%; width: 36%; aspect-ratio: 1 / 1; transform: translate(-50%, -50%);
+  display: grid; place-items: center; border-radius: 50%; background: var(--white); border: 1px solid var(--line);
+  box-shadow: 0 0 0 10px rgba(31,90,224,.05), 0 0 0 22px rgba(31,90,224,.03), 0 30px 60px -24px rgba(14,26,58,.35); }
+.hub-core img { width: 74%; height: auto; }
+.hub-status { position: absolute; left: 50%; top: calc(50% + 21%); transform: translateX(-50%); display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 12px; border-radius: 999px; background: var(--white); border: 1px solid var(--line); font-size: 13px; color: var(--ink-soft); white-space: nowrap; }
+
+.hub-node { position: absolute; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 10px;
+  padding: 7px 14px 7px 7px; border-radius: 999px; background: var(--white); border: 1px solid var(--line);
+  box-shadow: 0 10px 24px -14px rgba(14,26,58,.35); color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 600; white-space: nowrap;
+  transition: border-color .2s, transform .2s, box-shadow .2s; }
+.hub-node .board-icon { width: 32px; height: 32px; border-radius: 50%; }
+.hub-node .board-icon svg { width: 17px; height: 17px; }
+.hub-node:hover { border-color: var(--blue); transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 14px 30px -14px rgba(31,90,224,.5); }
+
+@media (max-width: 960px) { .hub { margin: 8px auto 0; } }
+@media (max-width: 560px) {
+  .hub-node { font-size: 12px; padding: 5px 10px 5px 5px; gap: 6px; }
+  .hub-node .board-icon { width: 24px; height: 24px; }
+  .hub-node .board-icon svg { width: 13px; height: 13px; }
+  .hub-status { font-size: 11px; padding: 3px 9px; }
+}
+@media (prefers-reduced-motion: reduce) { .hub-orbit { animation: none; } .hub-pulses { display: none; } }
+@media (max-width: 560px) {
+  .hub-node { white-space: normal; width: max-content; max-width: 40%; font-size: 11.5px; text-align: center; justify-content: center; line-height: 1.2; padding: 6px 10px; }
+  .hub-node .board-icon { display: none; }
+  .hub-node:nth-of-type(2), .hub-node:nth-of-type(3) { left: 79% !important; }
+  .hub-node:nth-of-type(5), .hub-node:nth-of-type(6) { left: 21% !important; }
+  .hub-core { width: 38%; }
+}
