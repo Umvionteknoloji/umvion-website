@@ -642,3 +642,12 @@ p { margin: 0; }
 .form-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .form-actions .form-hint { flex: 1; min-width: 200px; }
 @media (max-width: 960px) { .contact-page .contact { grid-template-columns: 1fr; gap: 32px; } .contact-side .contact-info { display: none; } }
+
+/* MDM – MobileITM iş ortaklığı */
+.mdm { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; padding: 36px; border-radius: 20px;
+  border: 1px solid var(--blue); background: radial-gradient(rgba(31,90,224,.10) 1px, transparent 1.2px) 0 0 / 22px 22px, #f4f7fe; }
+.mdm-badge { display: inline-block; padding: 5px 12px; border-radius: 999px; background: var(--blue); color: var(--white); font-size: 13px; font-weight: 600; }
+.mdm h3 { margin-top: 14px; font-size: 26px; }
+.mdm-text p { margin: 10px 0 22px; color: var(--ink-soft); }
+.mdm-list { margin: 0; padding: 24px 26px; border-radius: 16px; background: var(--white); border: 1px solid var(--line); }
+@media (max-width: 960px) { .mdm { grid-template-columns: 1fr; gap: 24px; padding: 26px 20px; } }
