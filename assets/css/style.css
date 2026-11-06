@@ -651,3 +651,36 @@ p { margin: 0; }
 .mdm-text p { margin: 10px 0 22px; color: var(--ink-soft); }
 .mdm-list { margin: 0; padding: 24px 26px; border-radius: 16px; background: var(--white); border: 1px solid var(--line); }
 @media (max-width: 960px) { .mdm { grid-template-columns: 1fr; gap: 24px; padding: 26px 20px; } }
+
+/* v8 – yasal sayfalar ve ödeme logoları */
+.footer-bottom { align-items: center; }
+.legal-links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; }
+.legal-links a { color: var(--ink-soft); text-decoration: none; }
+.legal-links a:hover { color: var(--blue); text-decoration: underline; }
+.pay-band { display: inline-flex; align-items: center; gap: 12px; padding: 6px 14px; border-radius: 10px; background: var(--white); border: 1px solid var(--line); }
+.pay-band img { height: 22px; width: auto; }
+.pay-band img[alt="Visa"] { height: 30px; }
+.pay-iyzico { font-weight: 700; font-size: 14px; color: #1e64ff; letter-spacing: -.01em; }
+.site-footer--slim .footer-bottom { flex-wrap: wrap; gap: 12px 24px; }
+
+.page-hero--compact { padding: 56px 0 40px; }
+.legal-updated { margin-top: 12px; font-size: 14px; color: var(--ink-soft); }
+.legal { display: grid; grid-template-columns: 260px 1fr; gap: 56px; align-items: start; }
+.legal-toc { position: sticky; top: 100px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--mist); font-size: 15px; }
+.legal-toc h2 { font-size: 15px; margin-bottom: 10px; }
+.legal-toc ol { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.legal-toc a { color: var(--ink-soft); text-decoration: none; }
+.legal-toc a:hover { color: var(--blue); }
+.legal-body { max-width: 760px; }
+.legal-body section + section { margin-top: 36px; }
+.legal-body h2 { font-size: 22px; margin-bottom: 12px; }
+.legal-body p, .legal-body li { color: var(--ink-soft); }
+.legal-body p + p { margin-top: 10px; }
+.legal-body ul { padding-left: 20px; display: grid; gap: 6px; margin: 10px 0 0; }
+.legal-body b { color: var(--ink); }
+.legal-company { list-style: none; padding: 18px 20px !important; margin-top: 12px !important; border-radius: 12px; background: var(--mist); border: 1px solid var(--line); }
+@media (max-width: 960px) { .legal { grid-template-columns: 1fr; gap: 28px; } .legal-toc { position: static; } }
+.pay-iyzico { display: inline-flex; align-items: center; gap: 5px; }
+.pay-iyzico img { height: 17px !important; width: auto; }
+.pay-iyzico span { font-weight: 600; font-size: 14px; color: #1e64ff; }
+.footer-grid a[href^="tel:"], .contact-info a[href^="tel:"] { color: inherit; }
