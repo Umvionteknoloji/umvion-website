@@ -56,20 +56,34 @@ const money = (n) => n.toFixed(2);
 const trFmt = (n) => n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 // ---- TCMB kuru -----------------------------------------------------------
+async function withTimeout(url, ms, opts = {}) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try { return await fetch(url, { ...opts, signal: ctrl.signal }); } finally { clearTimeout(t); }
+}
 async function usdRate() {
-  const res = await fetch('https://www.tcmb.gov.tr/kurlar/today.xml', { cf: { cacheTtl: 900, cacheEverything: true } });
-  if (!res.ok) throw new Error('TCMB kuru alınamadı');
-  const xml = await res.text();
-  const block = xml.match(/<Currency[^>]*CurrencyCode="USD"[^>]*>([\s\S]*?)<\/Currency>/);
-  const sell = block && block[1].match(/<ForexSelling>([\d.]+)<\/ForexSelling>/);
-  const date = (xml.match(/Tarih="([^"]+)"/) || [])[1] || '';
-  if (!sell) throw new Error('USD kuru bulunamadı');
-  return { rate: parseFloat(sell[1]), date };
+  // 1) TCMB döviz satış kuru
+  try {
+    const res = await withTimeout('https://www.tcmb.gov.tr/kurlar/today.xml', 5000,
+      { headers: { 'User-Agent': 'Mozilla/5.0 (Umvion odeme)' }, cf: { cacheTtl: 900, cacheEverything: true } });
+    if (res.ok) {
+      const xml = await res.text();
+      const block = xml.match(/<Currency[^>]*CurrencyCode="USD"[^>]*>([\s\S]*?)<\/Currency>/);
+      const sell = block && block[1].match(/<ForexSelling>([\d.]+)<\/ForexSelling>/);
+      const date = (xml.match(/Tarih="([^"]+)"/) || [])[1] || '';
+      if (sell) return { rate: parseFloat(sell[1]), date, source: 'TCMB döviz satış' };
+    }
+  } catch (e) { console.log('TCMB kuru alınamadı', String(e)); }
+  // 2) Yedek kaynak
+  const res = await withTimeout('https://open.er-api.com/v6/latest/USD', 5000, { cf: { cacheTtl: 900, cacheEverything: true } });
+  const d = await res.json();
+  if (!d || !d.rates || !d.rates.TRY) throw new Error('Kur alınamadı');
+  return { rate: Math.round(d.rates.TRY * 10000) / 10000, date: new Date().toLocaleDateString('tr-TR'), source: 'piyasa kuru' };
 }
 async function quote() {
-  const { rate, date } = await usdRate();
+  const { rate, date, source } = await usdRate();
   const tl = Math.round(PRODUCT.usd * rate * 100) / 100;
-  return { usd: PRODUCT.usd, rate, rateDate: date, amount: tl };
+  return { usd: PRODUCT.usd, rate, rateDate: date, rateSource: source, amount: tl };
 }
 
 // ---- iyzico (IYZWSv2 kimlik doğrulama) -----------------------------------
@@ -198,7 +212,7 @@ async function callback(request, env) {
 
   const payRows = [
     ['Sipariş no', order.id], ['Tutar', `${trFmt(order.quote.amount)} TL (${order.quote.usd} USD)`],
-    ['Kur', `${order.quote.rate} (TCMB döviz satış, ${order.quote.rateDate})`],
+    ['Kur', `${order.quote.rate} (${order.quote.rateSource || 'TCMB döviz satış'}, ${order.quote.rateDate})`],
     ['Tahsil edilen', `${r.paidPrice} TL${r.installment > 1 ? ' · ' + r.installment + ' taksit' : ''}`],
     ['iyzico ödeme no', r.paymentId],
   ];
@@ -227,16 +241,33 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const origin = request.headers.get('Origin') || '';
-    if (request.method === 'OPTIONS') return json({}, 204, origin);
+    try {
+      if (request.method === 'OPTIONS') return json({}, 204, origin);
+      if (url.pathname === '/iyzico/callback' && request.method === 'POST') return await callback(request, env);
 
-    if (url.pathname === '/iyzico/callback' && request.method === 'POST') return callback(request, env);
-
-    if (!ALLOWED_ORIGINS.includes(origin)) return json({ success: false, message: 'İzin verilmeyen kaynak.' }, 403, origin);
-    if (url.pathname === '/peplink/quote' && request.method === 'GET') {
-      try { return json({ success: true, ...(await quote()) }, 200, origin); }
-      catch { return json({ success: false, message: 'Kur alınamadı.' }, 503, origin); }
+      // Kontrol adresi: tarayıcıdan açılabilir, ayarların eksik olup olmadığını gösterir
+      if (url.pathname === '/' || url.pathname === '/durum') {
+        return json({
+          success: true, servis: 'Umvion ödeme', ortam: (env.IYZI_BASE || '').includes('sandbox') ? 'TEST (sandbox)' : 'CANLI',
+          ayarlar: { IYZI_API_KEY: !!env.IYZI_API_KEY, IYZI_SECRET_KEY: !!env.IYZI_SECRET_KEY, RESEND_API_KEY: !!env.RESEND_API_KEY,
+                     IYZI_BASE: env.IYZI_BASE || 'EKSİK', ORDERS_KV: !!env.ORDERS },
+        }, 200, origin);
+      }
+      if (url.pathname === '/peplink/quote' && request.method === 'GET') {
+        try { return json({ success: true, ...(await quote()) }, 200, origin); }
+        catch (e) { return json({ success: false, message: 'Kur alınamadı.' }, 503, origin); }
+      }
+      if (!ALLOWED_ORIGINS.includes(origin)) return json({ success: false, message: 'İzin verilmeyen kaynak.' }, 403, origin);
+      if (url.pathname === '/peplink/start' && request.method === 'POST') {
+        if (!env.ORDERS || !env.IYZI_API_KEY || !env.IYZI_SECRET_KEY) {
+          return json({ success: false, message: 'Ödeme servisi ayarları eksik. Lütfen bizi arayın: 0212 807 17 74' }, 500, origin);
+        }
+        return await start(request, env, origin);
+      }
+      return json({ success: false, message: 'Bulunamadı.' }, 404, origin);
+    } catch (e) {
+      console.log('Beklenmeyen hata', String(e && e.stack || e));
+      return json({ success: false, message: 'Ödeme servisinde beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.' }, 500, origin);
     }
-    if (url.pathname === '/peplink/start' && request.method === 'POST') return start(request, env, origin);
-    return json({ success: false, message: 'Bulunamadı.' }, 404, origin);
   },
 };

@@ -33,22 +33,28 @@
   fetch(API + '/peplink/quote').then(function (r) { return r.json(); }).then(function (d) {
     if (!d.success) throw new Error();
     tl.textContent = fmt(d.amount);
-    rateEl.textContent = '1 USD = ' + d.rate.toLocaleString('tr-TR', { minimumFractionDigits: 4 }) + ' TL (TCMB döviz satış, ' + d.rateDate + '). Kesin tutar ödeme anındaki kurla hesaplanır.';
+    rateEl.textContent = '1 USD = ' + d.rate.toLocaleString('tr-TR', { minimumFractionDigits: 4 }) + ' TL (' + (d.rateSource || 'TCMB döviz satış') + ', ' + d.rateDate + '). Kesin tutar ödeme anındaki kurla hesaplanır.';
     btn.textContent = 'Güvenli ödemeye geç · ' + fmt(d.amount);
   }).catch(function () { tl.textContent = '179 USD karşılığı'; });
+
+  form.addEventListener('input', function (e) {
+    var f = e.target.closest('.field'); if (f) f.classList.remove('is-invalid');
+  });
 
   form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     msg.classList.remove('is-visible');
-    var bad = [];
+    var bad = [], msgs = [];
     form.querySelectorAll('input[required]').forEach(function (el) {
-      var v = el.value.trim(), ok = !!v;
-      if (el.type === 'email') ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-      if (el.name === 'taxNumber') ok = /^\d{10,11}$/.test(v);
-      el.closest('.field').classList.toggle('is-invalid', !ok);
-      if (!ok) bad.push(el);
+      var v = el.value.trim(), label = el.closest('.field').querySelector('label').textContent.replace(' *', ''), why = '';
+      if (!v) why = label + ' boş bırakılamaz';
+      else if (el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) why = 'E-posta adresi geçerli değil (örnek: ad@firma.com)';
+      else if (el.name === 'taxNumber' && !/^\d{10,11}$/.test(v)) why = 'Vergi numarası 10 haneli olmalıdır';
+      else if (el.name === 'phone' && v.replace(/\D/g, '').length < 10) why = 'Telefon numarası eksik görünüyor';
+      el.closest('.field').classList.toggle('is-invalid', !!why);
+      if (why) { bad.push(el); msgs.push(why); }
     });
-    if (bad.length) { showError('Lütfen işaretli alanları kontrol edin. Vergi numarası 10 haneli olmalıdır.'); bad[0].focus(); return; }
+    if (bad.length) { showError(msgs.join(' · ')); bad[0].focus(); return; }
     if (!form.elements.acceptTerms.checked) { showError('Devam etmek için sözleşme onayını işaretleyin.'); return; }
 
     var data = {};
@@ -62,7 +68,9 @@
         location.href = d.paymentPageUrl;          // iyzico güvenli ödeme sayfası
       })
       .catch(function (e) {
-        showError((e && e.message) || 'Ödeme başlatılamadı. Lütfen tekrar deneyin veya 0212 807 17 74 numarasını arayın.');
+        var m = e && e.message;
+        if (!m || /fetch|network|load failed/i.test(m)) m = 'Ödeme servisine bağlanılamadı. Lütfen birkaç dakika sonra tekrar deneyin veya 0212 807 17 74 numarasını arayın.';
+        showError(m);
         btn.disabled = false; btn.textContent = label;
       });
   });
