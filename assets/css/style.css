@@ -684,3 +684,35 @@ p { margin: 0; }
 .pay-iyzico img { height: 17px !important; width: auto; }
 .pay-iyzico span { font-weight: 600; font-size: 14px; color: #1e64ff; }
 .footer-grid a[href^="tel:"], .contact-info a[href^="tel:"] { color: inherit; }
+
+/* Peplink lisans yenileme */
+.pl-grid { display: grid; grid-template-columns: 1fr 1.35fr; gap: 56px; align-items: start; }
+.pl-side h1 { margin-top: 14px; font-size: clamp(30px, 3.4vw, 42px); }
+.pl-side .lead { margin-top: 14px; font-size: 17px; }
+.pl-price { margin-top: 26px; padding: 20px 22px; border-radius: 16px; background: var(--white); border: 1px solid var(--line); box-shadow: 0 16px 32px -24px rgba(14,26,58,.35); }
+.pl-price-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.pl-price-row + .pl-price-row { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.pl-price-row span { color: var(--ink-soft); }
+.pl-price-tl b { font-size: 26px; color: var(--blue); letter-spacing: -.02em; }
+.pl-rate { margin-top: 10px; font-size: 13px; color: var(--ink-soft); }
+.pl-steps { margin: 26px 0 0; padding-left: 20px; display: grid; gap: 10px; color: var(--ink-soft); }
+.pl-steps b { color: var(--ink); }
+.pl-form fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 12px; }
+.pl-form fieldset + fieldset { margin-top: 6px; padding-top: 16px; border-top: 1px solid var(--line); }
+.pl-form legend { font-size: 13px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px; padding: 0; }
+.form-row--3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-row--city { grid-template-columns: 1fr 2.4fr; }
+.pl-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--ink-soft); margin-top: 4px; }
+.pl-check input { margin-top: 3px; width: 18px; height: 18px; flex: none; accent-color: var(--blue); }
+.pl-secure { font-size: 13px; color: var(--ink-soft); }
+.pl-result { display: grid; gap: 12px; justify-items: start; padding: 28px; margin-bottom: 20px; border-radius: 20px; border: 1px solid var(--line); background: var(--white); }
+.pl-result h2 { font-size: 24px; }
+.pl-result p { color: var(--ink-soft); }
+.pl-result--err { border-color: #f1c4bf; background: #fff8f7; }
+.pl-result--err .success-mark { background: #fdecea; }
+.pl-result--err .success-mark::after { border: 0; width: 3px; height: 16px; left: 22px; top: 12px; background: #c0352b; transform: none; border-radius: 2px; box-shadow: 0 20px 0 0 #c0352b; height: 14px; }
+.pl-card { margin-top: 26px; padding: 18px 20px; border-radius: 14px; border: 1px solid var(--blue); background: #f4f7fe; }
+.pl-card h3 { font-size: 17px; }
+.pl-card p { margin: 6px 0 12px; color: var(--ink-soft); font-size: 15px; }
+@media (max-width: 960px) { .pl-grid { grid-template-columns: 1fr; gap: 28px; } .form-row--3 { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .form-row--city { grid-template-columns: 1fr; } }
