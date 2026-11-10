@@ -102,17 +102,21 @@ async function iyzico(env, path, body) {
     headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: 'IYZWSv2 ' + auth, 'x-iyzi-rnd': rnd },
     body: payload,
   });
-  return res.json();
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch { console.log('iyzico JSON olmayan yanıt', res.status, text.slice(0, 300)); return { status: 'failure', errorMessage: 'iyzico yanıtı okunamadı (' + res.status + ')' }; }
 }
 
 // ---- E-posta (Resend) ----------------------------------------------------
 async function sendMail(env, msg) {
+  try {
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ from: FROM, ...msg }),
   });
   if (!r.ok) console.log('Resend hatası', r.status, await r.text());
+  } catch (e) { console.log('E-posta gönderilemedi', String(e)); }
 }
 function orderRows(o) {
   return [
@@ -187,6 +191,14 @@ async function start(request, env, origin) {
 
 // ---- iyzico dönüşü -------------------------------------------------------
 async function callback(request, env) {
+  try { return await handleCallback(request, env); }
+  catch (e) {
+    console.log('Ödeme dönüşünde hata', String(e && e.stack || e));
+    return Response.redirect(`${PAGE}?sonuc=hata`, 303);
+  }
+}
+
+async function handleCallback(request, env) {
   const back = (state, id) => Response.redirect(`${PAGE}?sonuc=${state}${id ? '&no=' + id : ''}`, 303);
   let token = '';
   try { token = (await request.formData()).get('token') || ''; } catch {}
@@ -194,7 +206,7 @@ async function callback(request, env) {
 
   const orderId = await env.ORDERS.get('token:' + token);
   const raw = orderId && await env.ORDERS.get('order:' + orderId);
-  if (!raw) return back('hata');
+  if (!raw) { console.log('Sipariş bulunamadı', JSON.stringify({ token: token.slice(0, 8), orderId })); return back('hata'); }
   const order = JSON.parse(raw);
   if (order.status === 'paid') return back('basarili', order.id);
 
@@ -203,6 +215,16 @@ async function callback(request, env) {
                Math.abs(parseFloat(r.price) - order.quote.amount) < 0.01;
   if (!paid) {
     console.log('ödeme başarısız', JSON.stringify({ id: order.id, status: r.status, paymentStatus: r.paymentStatus, err: r.errorMessage }));
+    if (r.status !== 'success') {
+      // Sonuç iyzico'dan doğrulanamadı: ödeme gerçekleşmiş olabilir, size uyarı gider
+      await sendMail(env, {
+        to: [NOTIFY_TO], reply_to: order.f.email,
+        subject: `KONTROL EDİN: Peplink ödeme sonucu doğrulanamadı – ${order.f.storeCode} ${order.f.storeName}`,
+        html: `<div style="font-family:Arial,sans-serif;color:#0e1a3a"><p><b>Bu ödemenin sonucu iyzico'dan doğrulanamadı.</b> Lütfen iyzico panelinde sipariş no <b>${esc(order.id)}</b> için işlem olup olmadığını kontrol edin.</p>
+          <p>Hata: ${esc(r.errorMessage || r.errorCode || 'bilinmiyor')}</p>${table(orderRows(order))}</div>`,
+      });
+      return back('hata', order.id);
+    }
     return back('basarisiz', order.id);
   }
 
