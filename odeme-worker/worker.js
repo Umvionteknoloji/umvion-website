@@ -170,7 +170,7 @@ async function start(request, env, origin) {
     enabledInstallments: INSTALLMENTS,
     buyer: {
       id: f.taxNumber, name: name || f.contactName, surname: rest.join(' ') || '-', gsmNumber: gsm, email: f.email,
-      identityNumber: f.taxNumber.length === 11 ? f.taxNumber : '11111111111',
+      identityNumber: f.taxNumber,   // kurumsal siparişte VKN (iyzico onaylı), şahıs şirketinde TCKN
       registrationAddress: addr.address, ip, city: f.city, country: 'Turkey',
     },
     billingAddress: addr,
