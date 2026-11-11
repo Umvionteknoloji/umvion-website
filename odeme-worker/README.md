@@ -11,4 +11,4 @@ Anahtarlar bu dosyada değil, Cloudflare panelinde saklanır:
 | IYZI_BASE | Text | Test: https://sandbox-api.iyzipay.com · Canlı: https://api.iyzipay.com |
 | ORDERS | KV namespace bağlantısı | peplink-orders |
 
-Fiyat (179 USD), bildirim adresi ve taksit seçenekleri dosyanın en üstündeki ayarlardan değiştirilir.
+Fiyat (184 USD), bildirim adresi ve taksit seçenekleri dosyanın en üstündeki ayarlardan değiştirilir.

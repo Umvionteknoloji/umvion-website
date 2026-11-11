@@ -19,7 +19,7 @@
 const SITE = 'https://www.umvion.com';
 const PAGE = SITE + '/peplink-lisans.html';
 const ALLOWED_ORIGINS = ['https://www.umvion.com', 'https://umvion.com'];
-const PRODUCT = { id: 'PEPLINK-LIC-3Y', name: 'Peplink lisans yenileme (3 yıl)', usd: 179 };
+const PRODUCT = { id: 'PEPLINK-LIC-3Y', name: 'Peplink lisans yenileme (3 yıl)', usd: 184 };
 const NOTIFY_TO = 'info@umvion.com';
 const FROM = 'Umvion Teknoloji <form@umvion.com>';
 const INSTALLMENTS = [1, 2, 3, 6, 9, 12];

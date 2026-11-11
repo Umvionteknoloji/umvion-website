@@ -33,9 +33,10 @@
   fetch(API + '/peplink/quote').then(function (r) { return r.json(); }).then(function (d) {
     if (!d.success) throw new Error();
     tl.textContent = fmt(d.amount);
+    var usdEl = document.getElementById('pl-usd'); if (usdEl && d.usd) usdEl.textContent = d.usd + ' USD';
     rateEl.textContent = '1 USD = ' + d.rate.toLocaleString('tr-TR', { minimumFractionDigits: 4 }) + ' TL (' + (d.rateSource || 'TCMB döviz satış') + ', ' + d.rateDate + '). Kesin tutar ödeme anındaki kurla hesaplanır.';
     btn.textContent = 'Güvenli ödemeye geç · ' + fmt(d.amount);
-  }).catch(function () { tl.textContent = '179 USD karşılığı'; });
+  }).catch(function () { tl.textContent = '184 USD karşılığı'; });
 
   form.addEventListener('input', function (e) {
     var f = e.target.closest('.field'); if (f) f.classList.remove('is-invalid');
