@@ -716,3 +716,37 @@ p { margin: 0; }
 .pl-card p { margin: 6px 0 12px; color: var(--ink-soft); font-size: 15px; }
 @media (max-width: 960px) { .pl-grid { grid-template-columns: 1fr; gap: 28px; } .form-row--3 { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .form-row--city { grid-template-columns: 1fr; } }
+
+/* Spesa sayfası (v2) */
+.eyebrow { display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.app-cover--narrow { max-width: 860px; margin-left: auto; margin-right: auto; }
+.shot-note { margin-top: 10px; font-size: 13px; color: var(--ink-soft); text-align: center; }
+.feature-row .shot { background: #f1f3f8; }
+.flow--5 { grid-template-columns: repeat(5, 1fr); }
+.status-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; align-items: center; }
+.chip { padding: 6px 12px; border-radius: 999px; font-size: 14px; font-weight: 600; }
+.chip--wait { background: #fdf3d8; color: #8a6a12; }
+.chip--info { background: #e6eefc; color: #2a4fa8; }
+.chip--warn { background: #fde9d7; color: #9a5413; }
+.chip--ok { background: #e3f4ea; color: #1f7a47; }
+.chain { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+.chain li { position: relative; padding: 18px 20px; margin-right: 28px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); text-align: center; }
+.chain li:last-child { margin-right: 0; border-color: var(--blue); }
+.chain li + li::before { content: ""; position: absolute; left: -28px; top: 50%; width: 28px; border-top: 2px dashed #b4c4e8; }
+.chain b { display: block; font-size: 17px; }
+.chain span { font-size: 14px; color: var(--ink-soft); }
+.settle { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.settle-card { padding: 26px; border-radius: 18px; background: var(--white); border: 1px solid var(--line); }
+.settle-card span { font-size: 14px; font-weight: 600; color: var(--blue); }
+.settle-card b { display: block; margin-top: 8px; font-size: 36px; letter-spacing: -.02em; }
+.settle-card h3 { margin-top: 10px; font-size: 18px; }
+.settle-card p { margin-top: 6px; color: var(--ink-soft); font-size: 15px; }
+.settle + .shot-note { text-align: left; margin-top: 16px; }
+@media (max-width: 960px) {
+  .flow--5 { grid-template-columns: 1fr 1fr; }
+  .chain { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .chain li { margin-right: 0; }
+  .chain li + li::before { display: none; }
+  .settle { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) { .flow--5 { grid-template-columns: 1fr; } }
