@@ -29,14 +29,31 @@
     if (retry) retry.addEventListener('click', function () { result.hidden = true; history.replaceState(null, '', location.pathname); });
   }
 
-  // Güncel tutar
+  // Güncel tutarlar ve süre seçimi
+  var plans = {}, rateText = '';
+  var radios = document.querySelectorAll('input[name="years"]');
+  var selected = function () { var r = document.querySelector('input[name="years"]:checked'); return r ? r.value : '3'; };
+  var render = function () {
+    var p = plans[selected()];
+    if (p) {
+      tl.textContent = fmt(p.amount);
+      btn.textContent = 'Güvenli ödemeye geç · ' + fmt(p.amount);
+    } else {
+      var usd = document.querySelector('[data-usd="' + selected() + '"]');
+      tl.textContent = (usd ? usd.textContent : '') + ' karşılığı';
+    }
+  };
+  radios.forEach(function (r) { r.addEventListener('change', render); });
   fetch(API + '/peplink/quote').then(function (r) { return r.json(); }).then(function (d) {
     if (!d.success) throw new Error();
-    tl.textContent = fmt(d.amount);
-    var usdEl = document.getElementById('pl-usd'); if (usdEl && d.usd) usdEl.textContent = d.usd + ' USD';
+    (d.plans || [{ years: d.years || 3, usd: d.usd, amount: d.amount }]).forEach(function (p) {
+      plans[String(p.years)] = p;
+      var el = document.querySelector('[data-usd="' + p.years + '"]');
+      if (el) el.textContent = p.usd + ' USD';
+    });
     rateEl.textContent = '1 USD = ' + d.rate.toLocaleString('tr-TR', { minimumFractionDigits: 4 }) + ' TL (' + (d.rateSource || 'TCMB döviz satış') + ', ' + d.rateDate + '). Kesin tutar ödeme anındaki kurla hesaplanır.';
-    btn.textContent = 'Güvenli ödemeye geç · ' + fmt(d.amount);
-  }).catch(function () { tl.textContent = '184 USD karşılığı'; });
+    render();
+  }).catch(render);
 
   form.addEventListener('input', function (e) {
     var f = e.target.closest('.field'); if (f) f.classList.remove('is-invalid');
@@ -61,6 +78,7 @@
     var data = {};
     new FormData(form).forEach(function (v, k) { data[k] = v; });
     data.acceptTerms = true;
+    data.years = selected();
     btn.disabled = true; var label = btn.textContent; btn.textContent = 'Ödeme sayfası hazırlanıyor…';
     fetch(API + '/peplink/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
       .then(function (r) { return r.json(); })

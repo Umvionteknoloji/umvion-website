@@ -750,3 +750,16 @@ p { margin: 0; }
   .settle { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) { .flow--5 { grid-template-columns: 1fr; } }
+
+/* Peplink lisans süresi seçimi */
+.pl-plans { border: 0; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pl-plans legend { font-size: 13px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px; padding: 0; }
+.pl-plan { position: relative; cursor: pointer; }
+.pl-plan input { position: absolute; opacity: 0; pointer-events: none; }
+.pl-plan span { display: grid; gap: 2px; padding: 12px 10px; border: 1.5px solid var(--line); border-radius: 12px; text-align: center; background: var(--white); transition: border-color .15s, background-color .15s; }
+.pl-plan b { font-size: 16px; }
+.pl-plan em { font-style: normal; font-size: 14px; color: var(--ink-soft); }
+.pl-plan:hover span { border-color: #b9c6e4; }
+.pl-plan input:checked + span { border-color: var(--blue); background: #f4f7fe; box-shadow: 0 0 0 3px #e3ebfd; }
+.pl-plan input:checked + span em { color: var(--blue); font-weight: 600; }
+.pl-plan input:focus-visible + span { outline: 3px solid var(--cyan); outline-offset: 2px; }

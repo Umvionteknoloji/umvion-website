@@ -10,7 +10,7 @@
  *   ORDERS            sipariş kayıtları için KV namespace
  *
  * Uç noktalar:
- *   GET  /peplink/quote     güncel TL tutarı (TCMB döviz satış kuru)
+ *   GET  /peplink/quote     1/2/3 yıllık fiyatların güncel TL tutarı (TCMB döviz satış kuru)
  *   POST /peplink/start     formu doğrular, ödemeyi başlatır, iyzico ödeme sayfası adresini döner
  *   POST /iyzico/callback   iyzico ödeme sonrası buraya döner; sonuç doğrulanır, e-postalar gönderilir
  */
@@ -19,7 +19,9 @@
 const SITE = 'https://www.umvion.com';
 const PAGE = SITE + '/peplink-lisans.html';
 const ALLOWED_ORIGINS = ['https://www.umvion.com', 'https://umvion.com'];
-const PRODUCT = { id: 'PEPLINK-LIC-3Y', name: 'Peplink lisans yenileme (3 yıl)', usd: 184 };
+// Lisans süresi (yıl) → USD fiyatı. Fiyat değiştirmek için yalnızca bu sayıları düzenleyip Deploy edin.
+const PLANS = { 1: 85, 2: 170, 3: 245 };
+const DEFAULT_YEARS = 3;
 const NOTIFY_TO = 'info@umvion.com';
 const FROM = 'Umvion Teknoloji <form@umvion.com>';
 const INSTALLMENTS = [1, 2, 3, 6, 9, 12];
@@ -80,10 +82,12 @@ async function usdRate() {
   if (!d || !d.rates || !d.rates.TRY) throw new Error('Kur alınamadı');
   return { rate: Math.round(d.rates.TRY * 10000) / 10000, date: new Date().toLocaleDateString('tr-TR'), source: 'piyasa kuru' };
 }
-async function quote() {
+async function quote(years = DEFAULT_YEARS) {
   const { rate, date, source } = await usdRate();
-  const tl = Math.round(PRODUCT.usd * rate * 100) / 100;
-  return { usd: PRODUCT.usd, rate, rateDate: date, rateSource: source, amount: tl };
+  const tl = (usd) => Math.round(usd * rate * 100) / 100;
+  const plans = Object.entries(PLANS).map(([y, usd]) => ({ years: +y, usd, amount: tl(usd) }));
+  const sel = plans.find((p) => p.years === years) || plans.find((p) => p.years === DEFAULT_YEARS);
+  return { years: sel.years, usd: sel.usd, amount: sel.amount, rate, rateDate: date, rateSource: source, plans, defaultYears: DEFAULT_YEARS };
 }
 
 // ---- iyzico (IYZWSv2 kimlik doğrulama) -----------------------------------
@@ -122,7 +126,7 @@ function orderRows(o) {
   return [
     ['Mağaza kodu', o.f.storeCode], ['Mağaza adı', o.f.storeName], ['Firma ünvanı', o.f.company],
     ['Vergi numarası', o.f.taxNumber], ['Vergi dairesi', o.f.taxOffice],
-    ['Peplink cihaz modeli', o.f.model], ['Peplink seri numarası', o.f.serial], ['Lisans süresi', '3 yıl'],
+    ['Peplink cihaz modeli', o.f.model], ['Peplink seri numarası', o.f.serial], ['Lisans süresi', `${o.years || 3} yıl`],
     ['Yetkili', o.f.contactName], ['E-posta', o.f.email], ['Telefon', o.f.phone],
     ['Fatura adresi', `${o.f.address}, ${o.f.city}`], ['Not', o.f.note || '-'],
   ];
@@ -151,7 +155,10 @@ async function start(request, env, origin) {
   const gsm = '+90' + digits.slice(-10);
 
   let q;
-  try { q = await quote(); } catch { return json({ success: false, message: 'Güncel kur alınamadı, lütfen biraz sonra tekrar deneyin.' }, 503, origin); }
+  // Süre gönderilmezse (eski sayfa sürümü) varsayılan süre kullanılır
+  const years = data.years === undefined || data.years === '' ? DEFAULT_YEARS : parseInt(data.years, 10);
+  if (!PLANS[years]) return json({ success: false, message: 'Geçerli bir lisans süresi seçin.' }, 422, origin);
+  try { q = await quote(years); } catch { return json({ success: false, message: 'Güncel kur alınamadı, lütfen biraz sonra tekrar deneyin.' }, 503, origin); }
 
   const orderId = 'PL' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 1296).toString(36).toUpperCase();
   const [name, ...rest] = f.contactName.split(/\s+/);
@@ -175,7 +182,7 @@ async function start(request, env, origin) {
     },
     billingAddress: addr,
     shippingAddress: addr,
-    basketItems: [{ id: PRODUCT.id, name: PRODUCT.name, category1: 'Yazılım lisansı', itemType: 'VIRTUAL', price: money(q.amount) }],
+    basketItems: [{ id: `PEPLINK-LIC-${years}Y`, name: `Peplink lisans yenileme (${years} yıl)`, category1: 'Yazılım lisansı', itemType: 'VIRTUAL', price: money(q.amount) }],
   };
 
   const res = await iyzico(env, '/payment/iyzipos/checkoutform/initialize/auth/ecom', body);
@@ -183,7 +190,8 @@ async function start(request, env, origin) {
     console.log('iyzico başlatma hatası', JSON.stringify(res));
     return json({ success: false, message: 'Ödeme başlatılamadı: ' + (res.errorMessage || 'bilinmeyen hata') }, 502, origin);
   }
-  const order = { id: orderId, f, quote: q, status: 'pending', created: new Date().toISOString() };
+  const { plans, ...qs } = q;
+  const order = { id: orderId, f, years, quote: qs, status: 'pending', created: new Date().toISOString() };
   await env.ORDERS.put('token:' + res.token, orderId, { expirationTtl: 60 * 60 * 24 * 2 });
   await env.ORDERS.put('order:' + orderId, JSON.stringify(order), { expirationTtl: 60 * 60 * 24 * 400 });
   return json({ success: true, orderId, amount: q.amount, paymentPageUrl: res.paymentPageUrl }, 200, origin);
@@ -242,7 +250,7 @@ async function handleCallback(request, env) {
 
   await sendMail(env, {
     to: [NOTIFY_TO], reply_to: order.f.email,
-    subject: `Peplink lisans ödemesi alındı – ${order.f.storeCode} ${order.f.storeName} – ${order.f.serial}`,
+    subject: `Peplink lisans ödemesi alındı (${order.years || 3} yıl) – ${order.f.storeCode} ${order.f.storeName} – ${order.f.serial}`,
     html: `<div style="font-family:Arial,sans-serif;color:#0e1a3a"><h2 style="margin:0 0 12px">Yeni Peplink lisans yenileme ödemesi</h2>
       ${table(orderRows(order))}<h3 style="margin:20px 0 8px">Ödeme</h3>${table(payRows)}</div>`,
     text: [...orderRows(order), ...payRows].map(([k, v]) => `${k}: ${v}`).join('\n'),
@@ -253,7 +261,7 @@ async function handleCallback(request, env) {
     html: `<div style="font-family:Arial,sans-serif;color:#0e1a3a"><p>Sayın ${esc(order.f.contactName)},</p>
       <p>Peplink lisans yenileme ödemeniz başarıyla alındı. Lisans işleminiz başlatılıyor; tamamlandığında size bilgi vereceğiz.</p>
       ${table([['Sipariş no', order.id], ['Mağaza', `${order.f.storeCode} – ${order.f.storeName}`], ['Cihaz', `${order.f.model} · ${order.f.serial}`],
-               ['Lisans süresi', '3 yıl'], ['Ödenen tutar', `${r.paidPrice} TL`]])}
+               ['Lisans süresi', `${order.years || 3} yıl`], ['Ödenen tutar', `${r.paidPrice} TL`]])}
       <p style="margin-top:20px">Umvion Teknoloji · 0212 807 17 74 · info@umvion.com</p></div>`,
   });
   return back('basarili', order.id);
