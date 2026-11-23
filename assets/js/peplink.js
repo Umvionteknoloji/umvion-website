@@ -29,31 +29,60 @@
     if (retry) retry.addEventListener('click', function () { result.hidden = true; history.replaceState(null, '', location.pathname); });
   }
 
-  // Güncel tutarlar ve süre seçimi
-  var plans = {}, rateText = '';
+  // Güncel tutarlar, süre ve ödeme yöntemi
+  var PRICES = { kart: { 1: 85, 2: 170, 3: 245 }, havale: { 1: 63, 2: 123, 3: 180 } };  // Worker yanıt vermezse
+  var rate = 0, amounts = { kart: {}, havale: {} };
+  var havale = document.getElementById('pl-havale');
+  var methodLabel = document.getElementById('pl-price-method');
+  var hTl = document.getElementById('pl-h-tl'), hTl2 = document.getElementById('pl-h-tl2'), hUsd = document.getElementById('pl-h-usd');
   var radios = document.querySelectorAll('input[name="years"]');
+  var methods = document.querySelectorAll('input[name="method"]');
   var selected = function () { var r = document.querySelector('input[name="years"]:checked'); return r ? r.value : '3'; };
+  var method = function () { var r = document.querySelector('input[name="method"]:checked'); return r ? r.value : 'havale'; };
+  var amountOf = function (m, y) { return amounts[m][y] || (rate ? Math.round(PRICES[m][y] * rate * 100) / 100 : 0); };
+
   var render = function () {
-    var p = plans[selected()];
-    if (p) {
-      tl.textContent = fmt(p.amount);
-      btn.textContent = 'Güvenli ödemeye geç · ' + fmt(p.amount);
+    var m = method(), y = selected(), amt = amountOf(m, y), usd = PRICES[m][y];
+    document.querySelectorAll('[data-usd]').forEach(function (el) { el.textContent = PRICES[m][el.getAttribute('data-usd')] + ' USD'; });
+    methodLabel.textContent = m === 'havale' ? 'Havale / EFT ile' : 'Kredi kartı ile';
+    tl.textContent = amt ? fmt(amt) : usd + ' USD karşılığı';
+    havale.hidden = m !== 'havale';
+    document.querySelectorAll('.pl-steps[data-method]').forEach(function (ol) { ol.hidden = ol.getAttribute('data-method') !== m; });
+    form.hidden = m === 'havale' || (result && !result.hidden && result.className.indexOf('--ok') > -1);
+    if (m === 'havale') {
+      hTl.textContent = amt ? fmt(amt) : usd + ' USD karşılığı';
+      hTl2.textContent = amt ? fmt(amt) : '—';
+      hUsd.textContent = y + ' yıl · ' + usd + ' USD';
     } else {
-      var usd = document.querySelector('[data-usd="' + selected() + '"]');
-      tl.textContent = (usd ? usd.textContent : '') + ' karşılığı';
+      btn.textContent = amt ? 'Güvenli ödemeye geç · ' + fmt(amt) : 'Güvenli ödemeye geç';
     }
   };
   radios.forEach(function (r) { r.addEventListener('change', render); });
+  methods.forEach(function (r) { r.addEventListener('change', render); });
+
+  // Ödeme dönüşünden gelindiyse kart seçili açılsın
+  if (state) { var k = document.querySelector('input[name="method"][value="kart"]'); if (k) k.checked = true; }
+
   fetch(API + '/peplink/quote').then(function (r) { return r.json(); }).then(function (d) {
     if (!d.success) throw new Error();
-    (d.plans || [{ years: d.years || 3, usd: d.usd, amount: d.amount }]).forEach(function (p) {
-      plans[String(p.years)] = p;
-      var el = document.querySelector('[data-usd="' + p.years + '"]');
-      if (el) el.textContent = p.usd + ' USD';
-    });
-    rateEl.textContent = '1 USD = ' + d.rate.toLocaleString('tr-TR', { minimumFractionDigits: 4 }) + ' TL (' + (d.rateSource || 'TCMB döviz satış') + ', ' + d.rateDate + '). Kesin tutar ödeme anındaki kurla hesaplanır.';
+    rate = d.rate;
+    (d.plans || []).forEach(function (p) { PRICES.kart[p.years] = p.usd; amounts.kart[p.years] = p.amount; });
+    (d.transfer || []).forEach(function (p) { PRICES.havale[p.years] = p.usd; amounts.havale[p.years] = p.amount; });
+    var note = '1 USD = ' + d.rate.toLocaleString('tr-TR', { minimumFractionDigits: 4 }) + ' TL (' + (d.rateSource || 'TCMB döviz satış') + ', ' + d.rateDate + ').';
+    rateEl.textContent = note + ' Kesin tutar ödeme anındaki kurla hesaplanır.';
     render();
   }).catch(render);
+  render();
+
+  // Kopyala düğmeleri
+  document.querySelectorAll('.pl-copy').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = document.getElementById(b.getAttribute('data-copy')).textContent.replace(/\s+TL$/, '').trim();
+      if (b.getAttribute('data-copy') === 'pl-iban') t = t.replace(/\s+/g, '');
+      var done = function () { var l = b.querySelector('span'); l.textContent = 'Kopyalandı'; b.classList.add('is-done'); setTimeout(function () { l.textContent = 'Kopyala'; b.classList.remove('is-done'); }, 1800); };
+      if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, done); else done();
+    });
+  });
 
   form.addEventListener('input', function (e) {
     var f = e.target.closest('.field'); if (f) f.classList.remove('is-invalid');

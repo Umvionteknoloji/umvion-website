@@ -20,7 +20,8 @@ const SITE = 'https://www.umvion.com';
 const PAGE = SITE + '/peplink-lisans.html';
 const ALLOWED_ORIGINS = ['https://www.umvion.com', 'https://umvion.com'];
 // Lisans süresi (yıl) → USD fiyatı. Fiyat değiştirmek için yalnızca bu sayıları düzenleyip Deploy edin.
-const PLANS = { 1: 85, 2: 170, 3: 245 };
+const PLANS = { 1: 85, 2: 170, 3: 245 };          // kredi kartı
+const TRANSFER = { 1: 63, 2: 123, 3: 180 };        // havale / EFT (sayfada gösterilir)
 const DEFAULT_YEARS = 3;
 const NOTIFY_TO = 'info@umvion.com';
 const FROM = 'Umvion Teknoloji <form@umvion.com>';
@@ -87,7 +88,8 @@ async function quote(years = DEFAULT_YEARS) {
   const tl = (usd) => Math.round(usd * rate * 100) / 100;
   const plans = Object.entries(PLANS).map(([y, usd]) => ({ years: +y, usd, amount: tl(usd) }));
   const sel = plans.find((p) => p.years === years) || plans.find((p) => p.years === DEFAULT_YEARS);
-  return { years: sel.years, usd: sel.usd, amount: sel.amount, rate, rateDate: date, rateSource: source, plans, defaultYears: DEFAULT_YEARS };
+  const transfer = Object.entries(TRANSFER).map(([y, usd]) => ({ years: +y, usd, amount: tl(usd) }));
+  return { years: sel.years, usd: sel.usd, amount: sel.amount, rate, rateDate: date, rateSource: source, plans, transfer, defaultYears: DEFAULT_YEARS };
 }
 
 // ---- iyzico (IYZWSv2 kimlik doğrulama) -----------------------------------
@@ -190,7 +192,7 @@ async function start(request, env, origin) {
     console.log('iyzico başlatma hatası', JSON.stringify(res));
     return json({ success: false, message: 'Ödeme başlatılamadı: ' + (res.errorMessage || 'bilinmeyen hata') }, 502, origin);
   }
-  const { plans, ...qs } = q;
+  const { plans, transfer, ...qs } = q;
   const order = { id: orderId, f, years, quote: qs, status: 'pending', created: new Date().toISOString() };
   await env.ORDERS.put('token:' + res.token, orderId, { expirationTtl: 60 * 60 * 24 * 2 });
   await env.ORDERS.put('order:' + orderId, JSON.stringify(order), { expirationTtl: 60 * 60 * 24 * 400 });

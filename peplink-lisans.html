@@ -47,14 +47,19 @@
           <div class="pl-price" id="pl-price">
             <fieldset class="pl-plans" form="pl-form">
               <legend>Lisans süresi</legend>
-              <label class="pl-plan"><input type="radio" name="years" value="1" form="pl-form"><span><b>1 yıl</b><em data-usd="1">85 USD</em></span></label>
-              <label class="pl-plan"><input type="radio" name="years" value="2" form="pl-form"><span><b>2 yıl</b><em data-usd="2">170 USD</em></span></label>
-              <label class="pl-plan"><input type="radio" name="years" value="3" form="pl-form" checked><span><b>3 yıl</b><em data-usd="3">245 USD</em></span></label>
+              <label class="pl-plan"><input type="radio" name="years" value="1" form="pl-form"><span><b>1 yıl</b><em data-usd="1">63 USD</em></span></label>
+              <label class="pl-plan"><input type="radio" name="years" value="2" form="pl-form"><span><b>2 yıl</b><em data-usd="2">123 USD</em></span></label>
+              <label class="pl-plan"><input type="radio" name="years" value="3" form="pl-form" checked><span><b>3 yıl</b><em data-usd="3">180 USD</em></span></label>
             </fieldset>
-            <div class="pl-price-row pl-price-tl" aria-live="polite"><span>Ödenecek tutar</span><b id="pl-tl">Hesaplanıyor…</b></div>
+            <div class="pl-price-row pl-price-tl" aria-live="polite"><span>Ödenecek tutar<small class="pl-price-method" id="pl-price-method">Havale / EFT ile</small></span><b id="pl-tl">Hesaplanıyor…</b></div>
             <p class="pl-rate" id="pl-rate">TL tutarı, TCMB güncel döviz satış kuru ile hesaplanır.</p>
           </div>
-          <ol class="pl-steps">
+          <ol class="pl-steps" data-method="havale">
+            <li><b>Süreyi seçin:</b> güncel kurla hesaplanan tutarı görün.</li>
+            <li><b>Havale/EFT yapın:</b> açıklamaya mağaza kodunuzu ve seri numaranızı yazın.</li>
+            <li><b>Dekontu gönderin:</b> ödemeniz hesabımıza geçince lisans işleminizi başlatırız.</li>
+          </ol>
+          <ol class="pl-steps" data-method="kart" hidden>
             <li><b>Formu doldurun:</b> mağaza, cihaz ve fatura bilgileri.</li>
             <li><b>Güvenle ödeyin:</b> iyzico güvenli ödeme sayfasında, 3D Secure ile. Taksit seçenekleri sunulur.</li>
             <li><b>Lisans başlatılır:</b> ödemeniz bize anında ulaşır, işleminizi başlatıp e-postayla bilgi veririz.</li>
@@ -63,7 +68,32 @@
 
         <div class="pl-main">
           <div class="pl-result" id="pl-result" hidden tabindex="-1"></div>
-          <form class="form pl-form" id="pl-form" novalidate>
+          <div class="pl-method" role="radiogroup" aria-label="Ödeme yöntemi">
+            <label class="pl-method-opt"><input type="radio" name="method" value="havale" checked><span><b>Havale / EFT</b><em>Banka hesabımıza</em></span></label>
+            <label class="pl-method-opt"><input type="radio" name="method" value="kart"><span><b>Kredi kartı</b><em>iyzico ile, taksit seçenekli</em></span></label>
+          </div>
+
+          <div class="pl-havale" id="pl-havale">
+            <div class="pl-havale-amount">
+              <span>Yatırılacak tutar</span>
+              <b id="pl-h-tl">Hesaplanıyor…</b>
+              <small id="pl-h-usd">3 yıl · 180 USD</small>
+            </div>
+            <dl class="pl-bank">
+              <div><dt>Alıcı</dt><dd>UMVİON TEKNOLOJİ LİMİTED ŞİRKETİ</dd></div>
+              <div><dt>Banka</dt><dd>Garanti Bankası – Bomonti Şubesi</dd></div>
+              <div class="pl-iban"><dt>IBAN</dt><dd><span id="pl-iban">TR94 0006 2001 4700 0006 2978 43</span><button type="button" class="pl-copy" data-copy="pl-iban" aria-label="IBAN’ı kopyala"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span>Kopyala</span></button></dd></div>
+              <div><dt>Tutar</dt><dd><span id="pl-h-tl2">—</span><button type="button" class="pl-copy" data-copy="pl-h-tl2" aria-label="Tutarı kopyala"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span>Kopyala</span></button></dd></div>
+            </dl>
+            <ol class="pl-havale-steps">
+              <li>Tutarı yukarıdaki hesaba havale/EFT ile gönderin. <b>Açıklama</b> kısmına mağaza kodunuzu ve Peplink seri numaranızı yazın.</li>
+              <li>Dekontu, mağaza ve cihaz bilgileriyle birlikte <a href="mailto:info@umvion.com?subject=Peplink%20lisans%20havale%20dekontu">info@umvion.com</a> adresine gönderin.</li>
+              <li>Ödemeniz hesabımıza geçtiğinde lisans işleminizi başlatıp size bilgi veririz.</li>
+            </ol>
+            <p class="pl-rate">Tutar, TCMB güncel döviz satış kuruyla hesaplanmıştır; kur değişebileceği için ödemeyi aynı gün içinde yapmanızı rica ederiz.</p>
+          </div>
+
+          <form class="form pl-form" id="pl-form" novalidate hidden>
             <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
             <fieldset><legend>Mağaza ve cihaz</legend>
               <div class="form-row"><div class="field"><label for="p-storeCode">Mağaza kodu *</label><input id="p-storeCode" name="storeCode" required></div><div class="field"><label for="p-storeName">Mağaza adı *</label><input id="p-storeName" name="storeName" required></div></div>
@@ -149,6 +179,6 @@
   </footer>
 
   <script src="assets/js/main.js" defer></script>
-  <script src="assets/js/peplink.js?v=28" defer></script>
+  <script src="assets/js/peplink.js?v=29" defer></script>
 </body>
 </html>
