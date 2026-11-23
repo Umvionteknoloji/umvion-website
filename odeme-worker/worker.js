@@ -12,6 +12,7 @@
  * Uç noktalar:
  *   GET  /peplink/quote     1/2/3 yıllık fiyatların güncel TL tutarı (TCMB döviz satış kuru)
  *   POST /peplink/start     formu doğrular, ödemeyi başlatır, iyzico ödeme sayfası adresini döner
+ *   POST /peplink/havale    havale bildirimi: form + dekont (PDF/JPG/PNG) e-posta ekiyle gönderilir
  *   POST /iyzico/callback   iyzico ödeme sonrası buraya döner; sonuç doğrulanır, e-postalar gönderilir
  */
 
@@ -199,6 +200,86 @@ async function start(request, env, origin) {
   return json({ success: true, orderId, amount: q.amount, paymentPageUrl: res.paymentPageUrl }, 200, origin);
 }
 
+// ---- Havale bildirimi (dekont ekli) -------------------------------------
+const MAX_FILE = 5 * 1024 * 1024;
+function fileKind(bytes) {
+  if (bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46) return { ext: 'pdf', type: 'application/pdf' };
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return { ext: 'jpg', type: 'image/jpeg' };
+  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return { ext: 'png', type: 'image/png' };
+  return null;
+}
+function toBase64(bytes) {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+async function havale(request, env, origin) {
+  let form;
+  try { form = await request.formData(); } catch { return json({ success: false, message: 'Form verisi okunamadı.' }, 400, origin); }
+  if (form.get('botcheck')) return json({ success: false, message: 'Geçersiz istek.' }, 400, origin);
+  if (!form.get('acceptTerms')) return json({ success: false, message: 'Mesafeli Hizmet Sözleşmesi onayı gereklidir.' }, 422, origin);
+
+  const f = {};
+  for (const [key, [label, max, required]] of Object.entries(FIELDS)) {
+    f[key] = String(form.get(key) || '').trim().slice(0, max);
+    if (required && !f[key]) return json({ success: false, message: `${label} zorunludur.` }, 422, origin);
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) return json({ success: false, message: 'Geçerli bir e-posta girin.' }, 422, origin);
+  if (!/^\d{10,11}$/.test(f.taxNumber)) return json({ success: false, message: 'Vergi numarası 10 (veya TC kimlik no 11) haneli olmalıdır.' }, 422, origin);
+  const years = parseInt(form.get('years'), 10);
+  if (!TRANSFER[years]) return json({ success: false, message: 'Geçerli bir lisans süresi seçin.' }, 422, origin);
+
+  const file = form.get('dekont');
+  if (!file || typeof file === 'string' || !file.size) return json({ success: false, message: 'Lütfen dekontu yükleyin.' }, 422, origin);
+  if (file.size > MAX_FILE) return json({ success: false, message: 'Dekont dosyası en fazla 5 MB olabilir.' }, 413, origin);
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const kind = fileKind(bytes);
+  if (!kind) return json({ success: false, message: 'Dekont PDF, JPG veya PNG formatında olmalıdır.' }, 415, origin);
+
+  let q = null;
+  try { q = await quote(years); } catch {}
+  const usd = TRANSFER[years];
+  const amount = q ? (q.transfer.find((p) => p.years === years) || {}).amount : null;
+  const ref = 'HV' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 1296).toString(36).toUpperCase();
+  const order = { id: ref, f, years };
+  const rows = orderRows(order);
+  const payRows = [
+    ['Bildirim no', ref], ['Ödeme yöntemi', 'Havale / EFT'],
+    ['Beklenen tutar', amount ? `${trFmt(amount)} TL (${usd} USD)` : `${usd} USD karşılığı`],
+    ['Kur', q ? `${q.rate} (${q.rateSource || 'TCMB döviz satış'}, ${q.rateDate})` : '-'],
+    ['Dekont', `${file.name || 'dekont.' + kind.ext} (${Math.round(file.size / 1024)} KB, ekte)`],
+  ];
+  const safeName = `dekont-${f.storeCode.replace(/[^\w-]+/g, '_')}-${ref}.${kind.ext}`;
+
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: FROM, to: [NOTIFY_TO], reply_to: f.email,
+      subject: `Peplink havale bildirimi (${years} yıl) – ${f.storeCode} ${f.storeName} – ${f.serial}`,
+      html: `<div style="font-family:Arial,sans-serif;color:#0e1a3a"><h2 style="margin:0 0 12px">Yeni Peplink havale bildirimi</h2>
+        <p style="color:#9a5413"><b>Ödemenin hesaba geçtiğini banka hesabınızdan kontrol ettikten sonra lisans işlemini başlatın.</b></p>
+        ${table(rows)}<h3 style="margin:20px 0 8px">Havale</h3>${table(payRows)}</div>`,
+      text: [...rows, ...payRows].map(([k, v]) => `${k}: ${v}`).join('\n'),
+      attachments: [{ filename: safeName, content: toBase64(bytes) }],
+    }),
+  });
+  if (!r.ok) {
+    console.log('Havale e-postası gönderilemedi', r.status, await r.text());
+    return json({ success: false, message: 'Bildirim gönderilemedi. Lütfen dekontu info@umvion.com adresine e-postayla gönderin.' }, 502, origin);
+  }
+  await sendMail(env, {
+    to: [f.email], reply_to: NOTIFY_TO,
+    subject: `Havale bildiriminiz alındı – Peplink lisans yenileme (${ref})`,
+    html: `<div style="font-family:Arial,sans-serif;color:#0e1a3a"><p>Sayın ${esc(f.contactName)},</p>
+      <p>Havale bildiriminiz ve dekontunuz bize ulaştı. Ödemeniz hesabımıza geçtiğinde lisans işleminizi başlatıp size bilgi vereceğiz.</p>
+      ${table([['Bildirim no', ref], ['Mağaza', `${f.storeCode} – ${f.storeName}`], ['Cihaz', `${f.model} · ${f.serial}`], ['Lisans süresi', `${years} yıl`],
+               ['Tutar', amount ? `${trFmt(amount)} TL` : `${usd} USD karşılığı`]])}
+      <p style="margin-top:20px">Umvion Teknoloji · 0212 807 17 74 · info@umvion.com</p></div>`,
+  });
+  return json({ success: true, ref }, 200, origin);
+}
+
 // ---- iyzico dönüşü -------------------------------------------------------
 async function callback(request, env) {
   try { return await handleCallback(request, env); }
@@ -290,6 +371,10 @@ export default {
         catch (e) { return json({ success: false, message: 'Kur alınamadı.' }, 503, origin); }
       }
       if (!ALLOWED_ORIGINS.includes(origin)) return json({ success: false, message: 'İzin verilmeyen kaynak.' }, 403, origin);
+      if (url.pathname === '/peplink/havale' && request.method === 'POST') {
+        if (!env.RESEND_API_KEY) return json({ success: false, message: 'Bildirim servisi ayarları eksik.' }, 500, origin);
+        return await havale(request, env, origin);
+      }
       if (url.pathname === '/peplink/start' && request.method === 'POST') {
         if (!env.ORDERS || !env.IYZI_API_KEY || !env.IYZI_SECRET_KEY) {
           return json({ success: false, message: 'Ödeme servisi ayarları eksik. Lütfen bizi arayın: 0212 807 17 74' }, 500, origin);

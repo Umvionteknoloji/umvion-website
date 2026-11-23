@@ -794,3 +794,18 @@ p { margin: 0; }
 .pl-havale .pl-rate { margin: 0; }
 .pl-price-method { display: block; font-size: 13px; color: var(--ink-soft); }
 @media (max-width: 560px) { .pl-havale { padding: 20px 16px; } .pl-bank > div { grid-template-columns: 1fr; gap: 4px; } }
+
+/* Peplink: dekont yükleme */
+.pl-upload { border: 0; padding: 16px 0 0 !important; margin: 6px 0 0; border-top: 1px solid var(--line); }
+.pl-upload legend { font-size: 13px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px; padding: 0; }
+.pl-drop { position: relative; display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1.5px dashed #b9c6e4; border-radius: 14px; background: #f8faff; cursor: pointer; transition: border-color .15s, background-color .15s; }
+.pl-drop:hover, .pl-drop:focus-within { border-color: var(--blue); background: #f1f5fe; }
+.pl-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.pl-drop-icon { flex: none; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: #e6eefc; color: var(--blue); }
+.pl-drop-icon svg { width: 20px; height: 20px; }
+.pl-drop-text { display: grid; gap: 2px; min-width: 0; }
+.pl-drop-text b { font-size: 15px; overflow-wrap: anywhere; }
+.pl-drop-text small { font-size: 13px; color: var(--ink-soft); }
+.pl-upload.has-file .pl-drop { border-style: solid; border-color: var(--green); background: #f2fbf6; }
+.pl-upload.has-file .pl-drop-icon { background: #e3f4ea; color: var(--green); }
+.pl-upload.is-invalid .pl-drop { border-color: #c0352b; background: #fff8f7; }

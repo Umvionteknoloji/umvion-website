@@ -33,6 +33,22 @@
   var PRICES = { kart: { 1: 85, 2: 170, 3: 245 }, havale: { 1: 63, 2: 123, 3: 180 } };  // Worker yanıt vermezse
   var rate = 0, amounts = { kart: {}, havale: {} };
   var havale = document.getElementById('pl-havale');
+  var upload = document.getElementById('pl-upload'), fileInput = document.getElementById('p-dekont'), fileName = document.getElementById('pl-file-name');
+  var secure = document.getElementById('pl-secure');
+  var MAX_FILE = 5 * 1024 * 1024, OK_TYPES = /\.(pdf|jpe?g|png)$/i;
+  var checkFile = function () {
+    var f = fileInput.files && fileInput.files[0];
+    if (!f) return 'Lütfen dekontu yükleyin';
+    if (!OK_TYPES.test(f.name)) return 'Dekont PDF, JPG veya PNG formatında olmalıdır';
+    if (f.size > MAX_FILE) return 'Dekont dosyası en fazla 5 MB olabilir';
+    return '';
+  };
+  fileInput.addEventListener('change', function () {
+    var f = fileInput.files && fileInput.files[0];
+    fileName.textContent = f ? f.name + ' (' + Math.max(1, Math.round(f.size / 1024)) + ' KB)' : 'Dekontu seçin veya buraya sürükleyin';
+    upload.classList.toggle('has-file', !!f);
+    upload.classList.toggle('is-invalid', !!(f && checkFile()));
+  });
   var methodLabel = document.getElementById('pl-price-method');
   var hTl = document.getElementById('pl-h-tl'), hTl2 = document.getElementById('pl-h-tl2'), hUsd = document.getElementById('pl-h-usd');
   var radios = document.querySelectorAll('input[name="years"]');
@@ -48,11 +64,14 @@
     tl.textContent = amt ? fmt(amt) : usd + ' USD karşılığı';
     havale.hidden = m !== 'havale';
     document.querySelectorAll('.pl-steps[data-method]').forEach(function (ol) { ol.hidden = ol.getAttribute('data-method') !== m; });
-    form.hidden = m === 'havale' || (result && !result.hidden && result.className.indexOf('--ok') > -1);
+    form.hidden = !!(result && !result.hidden && result.className.indexOf('--ok') > -1);
+    upload.hidden = m !== 'havale';
+    secure.textContent = m === 'havale' ? 'Dekontunuz ve bilgileriniz doğrudan bize iletilir' : 'iyzico güvencesiyle · 3D Secure';
     if (m === 'havale') {
       hTl.textContent = amt ? fmt(amt) : usd + ' USD karşılığı';
       hTl2.textContent = amt ? fmt(amt) : '—';
       hUsd.textContent = y + ' yıl · ' + usd + ' USD';
+      btn.textContent = 'Havale bildirimini gönder';
     } else {
       btn.textContent = amt ? 'Güvenli ödemeye geç · ' + fmt(amt) : 'Güvenli ödemeye geç';
     }
@@ -104,8 +123,35 @@
     if (bad.length) { showError(msgs.join(' · ')); bad[0].focus(); return; }
     if (!form.elements.acceptTerms.checked) { showError('Devam etmek için sözleşme onayını işaretleyin.'); return; }
 
+    if (method() === 'havale') {
+      var fe = checkFile();
+      upload.classList.toggle('is-invalid', !!fe);
+      if (fe) { showError(fe); return; }
+      var fd = new FormData(form);
+      fd.set('years', selected()); fd.set('acceptTerms', 'on');
+      btn.disabled = true; var hl = btn.textContent; btn.textContent = 'Gönderiliyor…';
+      fetch(API + '/peplink/havale', { method: 'POST', body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d.success) throw new Error(d.message || '');
+          result.className = 'pl-result pl-result--ok';
+          result.innerHTML = '<span class="success-mark" aria-hidden="true"></span><h2>Havale bildiriminiz alındı</h2>' +
+            '<p>Dekontunuz ve bilgileriniz bize ulaştı; özetini e-posta adresinize gönderdik. Ödemeniz hesabımıza geçtiğinde lisans işleminizi başlatıp size bilgi vereceğiz. Bildirim no: <b>' + d.ref + '</b></p>' +
+            '<a class="btn btn--ghost" href="index.html">Ana sayfaya dön</a>';
+          result.hidden = false; form.hidden = true; havale.hidden = true;
+          document.querySelector('.pl-method').hidden = true;
+          result.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        })
+        .catch(function (e) {
+          var m = e && e.message;
+          if (!m || /fetch|network|load failed/i.test(m)) m = 'Bildirim gönderilemedi. Lütfen tekrar deneyin veya dekontu info@umvion.com adresine e-postayla gönderin.';
+          showError(m); btn.disabled = false; btn.textContent = hl;
+        });
+      return;
+    }
+
     var data = {};
-    new FormData(form).forEach(function (v, k) { data[k] = v; });
+    new FormData(form).forEach(function (v, k) { if (k !== 'dekont') data[k] = v; });
     data.acceptTerms = true;
     data.years = selected();
     btn.disabled = true; var label = btn.textContent; btn.textContent = 'Ödeme sayfası hazırlanıyor…';

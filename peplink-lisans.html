@@ -57,7 +57,7 @@
           <ol class="pl-steps" data-method="havale">
             <li><b>Süreyi seçin:</b> güncel kurla hesaplanan tutarı görün.</li>
             <li><b>Havale/EFT yapın:</b> açıklamaya mağaza kodunuzu ve seri numaranızı yazın.</li>
-            <li><b>Dekontu gönderin:</b> ödemeniz hesabımıza geçince lisans işleminizi başlatırız.</li>
+            <li><b>Dekontu yükleyin:</b> formla birlikte gönderin; ödemeniz hesabımıza geçince lisans işleminizi başlatırız.</li>
           </ol>
           <ol class="pl-steps" data-method="kart" hidden>
             <li><b>Formu doldurun:</b> mağaza, cihaz ve fatura bilgileri.</li>
@@ -87,7 +87,7 @@
             </dl>
             <ol class="pl-havale-steps">
               <li>Tutarı yukarıdaki hesaba havale/EFT ile gönderin. <b>Açıklama</b> kısmına mağaza kodunuzu ve Peplink seri numaranızı yazın.</li>
-              <li>Dekontu, mağaza ve cihaz bilgileriyle birlikte <a href="mailto:info@umvion.com?subject=Peplink%20lisans%20havale%20dekontu">info@umvion.com</a> adresine gönderin.</li>
+              <li>Aşağıdaki formu doldurun, <b>dekontu yükleyin</b> ve <b>Havale bildirimini gönder</b> düğmesine basın.</li>
               <li>Ödemeniz hesabımıza geçtiğinde lisans işleminizi başlatıp size bilgi veririz.</li>
             </ol>
             <p class="pl-rate">Tutar, TCMB güncel döviz satış kuruyla hesaplanmıştır; kur değişebileceği için ödemeyi aynı gün içinde yapmanızı rica ederiz.</p>
@@ -108,11 +108,18 @@
               <div class="form-row form-row--3"><div class="field"><label for="p-contactName">Ad soyad *</label><input id="p-contactName" name="contactName" required autocomplete="name"></div><div class="field"><label for="p-email">E-posta *</label><input id="p-email" name="email" required type="email" autocomplete="email"></div><div class="field"><label for="p-phone">Telefon *</label><input id="p-phone" name="phone" required type="tel" autocomplete="tel" placeholder="05xx xxx xx xx"></div></div>
               <div class="field"><label for="p-note">Not</label><input id="p-note" name="note" placeholder="İsteğe bağlı"></div>
             </fieldset>
+            <fieldset class="pl-upload" id="pl-upload"><legend>Dekont</legend>
+              <label class="pl-drop" for="p-dekont">
+                <input type="file" id="p-dekont" name="dekont" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
+                <span class="pl-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>
+                <span class="pl-drop-text"><b id="pl-file-name">Dekontu seçin veya buraya sürükleyin</b><small>PDF, JPG veya PNG · en fazla 5 MB</small></span>
+              </label>
+            </fieldset>
             <label class="pl-check"><input type="checkbox" name="acceptTerms" id="p-terms"> <span><a href="mesafeli-hizmet-sozlesmesi.html" target="_blank">Mesafeli Hizmet Sözleşmesi</a> ile <a href="teslimat-ve-iade.html" target="_blank">Teslimat ve İade Koşulları</a>’nı okudum, kabul ediyorum. Kişisel verilerim <a href="gizlilik-politikasi.html" target="_blank">Gizlilik Politikası</a> kapsamında işlenir.</span></label>
             <p class="form-msg form-msg--error" role="alert"></p>
             <div class="form-actions">
               <button class="btn btn--primary" type="submit" id="pl-submit">Güvenli ödemeye geç</button>
-              <span class="pl-secure">iyzico güvencesiyle · 3D Secure</span>
+              <span class="pl-secure" id="pl-secure">iyzico güvencesiyle · 3D Secure</span>
             </div>
           </form>
         </div>
@@ -179,6 +186,6 @@
   </footer>
 
   <script src="assets/js/main.js" defer></script>
-  <script src="assets/js/peplink.js?v=29" defer></script>
+  <script src="assets/js/peplink.js?v=30" defer></script>
 </body>
 </html>
